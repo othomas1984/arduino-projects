@@ -1,0 +1,60 @@
+# Compiled object files
+*.o
+
+# Precompiled Headers
+*.gch
+
+# Compiled Dynamic libraries
+*.so
+
+# Static libraries
+*.a
+*.lib
+
+# Executable files
+*.exe
+*.out
+*.app
+*.bin
+*.elf
+*.hex
+
+# Arduino specific
+*.ino.*.d
+*.ino.*.o
+*.ino.cpp
+
+# Build output directory
+/build/
+*.dSYM/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.log
+*.DS_Store
+
+# OS-specific files
+Thumbs.db
+Desktop.ini
+
+# IDE-specific files
+.vscode/
+*.code-workspace
+.idea/
+*.iml
+
+# Library dependencies
+/libraries/
+
+# Arduino settings and caches
+*.ino.cache
+*.ino.eep
+*.ino.with_bootloader.hex
+*.ino.hex
+
+# Hidden system files
+._*
