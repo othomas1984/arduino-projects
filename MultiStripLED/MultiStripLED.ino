@@ -2,45 +2,79 @@
 #include "LEDSection.h"
 
 // Define constants
-const int PIXEL_COUNT = 60;    // Total number of LEDs
+const int PIXEL_COUNT = 300;    // Total number of LEDs
 const int PIXEL_PIN = 6;       // Pin connected to the NeoPixel strip
 
 // Define the lengths of each section
-const int NUM_STRIPS = 6;
-const int PIXELS_PER_STRIP = PIXEL_COUNT / NUM_STRIPS;
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
+
+int pixels1[] = {60, 63, 67, 66, 62, 64, 65, 69, 68, 61};  // Example: controlling pixels 2, 4, 6, 8, and 10
+LEDSection section6(&strip, 10, pixels1);
+int pixels2[] = {80, 81, 82, 83, 84, 85, 86, 87, 89, 88};  // Example: controlling pixels 2, 4, 6, 8, and 10
+LEDSection section8(&strip, 10, pixels2);
+LEDSection section10(&strip, 0, 299);
+LEDSection sections[6] = {
+    LEDSection(&strip, 0, 49),
+    LEDSection(&strip, 50, 99),
+    LEDSection(&strip, 100, 149),
+    LEDSection(&strip, 150, 199),
+    LEDSection(&strip, 200, 249),
+    LEDSection(&strip, 250, 299)
+
+    // section6,
+    // section8,
+    // LEDSection(&strip, 70, 79)
+};
 // Create multiple instances for each section
 
 void setup() {
 
-
+    Serial.begin(9600);
     strip.begin();   // Initialize section 1
-    strip.clear();   // Initialize section 3
+    // strip.clear();   // Initialize section 3
 
     strip.setBrightness(3);
     strip.show();    // Turn off all LEDs in section 3
 }
 
-void eraseAll() {
+void eraseAll(int wait) {
   for(int i = 0; i < PIXEL_COUNT; i++) {
     strip.setPixelColor(i, strip.Color(0, 0, 0));
+    if(wait > 0) {
+      strip.show();
+      delay(wait);
+    }
   }
 }
 
 void loop() {
-  // eraseAll();
-  // return;
-  for (int i = 0; i < NUM_STRIPS; i++) {
-    rainbowWipe(strip, 0 + PIXELS_PER_STRIP * i, PIXELS_PER_STRIP + (PIXELS_PER_STRIP * i), 10, true);
-    // setSectionColor(strip, 0 + PIXELS_PER_STRIP * i, 20 + PIXELS_PER_STRIP * i, strip.Color(255, 0, 0));
+  Serial.println("Start Loop");
+  // eraseAll(0);
+// return;
+  // for (int i = 0; i < NUM_STRIPS - 4; i++) {
+  //   rainbowWipe(strip, 0 + PIXELS_PER_STRIP * i, PIXELS_PER_STRIP + (PIXELS_PER_STRIP * i), 10, true);
+  // }
+  for (int i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
+    rainbowWipe(sections[i], 1, true);
   }
+  // rainbowWipe(section1, 0, sizeof(pixels2) / sizeof(pixels2[0]), 100, true);
+  // rainbowWipe(section2, 0, sizeof(pixels2) / sizeof(pixels2[0]), 100, true);
+  // strip.setPixelColor(0, strip.Color(0, 0, 0));
+  strip.show();
   // strips[1].show();
   // Show the changes
     // strip.show();
 
-  delay(1000); // Wait for 1 second
+  delay(200); // Wait for 1 second
+  // for (int i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
+  //   // rainbowWipe(sections[i], 1, true);
+  //   rainbow(sections[i], 10, 3, false);
+  // }
+  rainbow(section10, 5, 3, false);
+  eraseAll(1);
+  Serial.println("End Loop");
 
   // for (int i = NUM_STRIPS - 1; i >= 0; i--) {
   //   rainbowWipe(strip, 0 + PIXELS_PER_STRIP * i, PIXELS_PER_STRIP + (PIXELS_PER_STRIP * i), 10, false);
@@ -51,7 +85,7 @@ void loop() {
   //   // strip.show();
 
   // delay(1000); // Wait for 1 second
-return;
+// return;
   // for (int i = 0; i < NUM_STRIPS; i++) {
   //   setSectionColor(strips[i], 0, 29, strips[i].Color(255, 0, 0));
   //   // for (int j = 0; j <= 30; j++) {
@@ -79,7 +113,7 @@ return;
   // strip3.show();
   // strip4.show();
 
-  delay(1000); // Pause for 1 second
+  // delay(1000); // Pause for 1 second
 }
 
 // void setupSections() {
@@ -107,11 +141,11 @@ return;
 //  // Turn off all LEDs in section 3
 // }
 
-void setSectionColor(Adafruit_NeoPixel &strip, int start, int end, uint32_t color) {
-  for (int i = start; i <= end; i++) {
-    strip.setPixelColor(i, color);
-  }
-}
+// void setSectionColor(Adafruit_NeoPixel &strip, int start, int end, uint32_t color) {
+//   for (int i = start; i <= end; i++) {
+//     strip.setPixelColor(i, color);
+//   }
+// }
 
 // void loopStrips() {
 //   // setSectionColor(strip1, 0, SECTION_1_COUNT - 1, strip1.Color(255, 0, 0));
@@ -183,7 +217,64 @@ void rainbowWipe(Adafruit_NeoPixel &strip, int start, int end, int wait, bool fo
     // strip.show(); // Update strip with new contents
     // delay(wait);  // Pause for a moment
 }
+void rainbowWipe(LEDSection section, int wait, bool forwards) {
+  rainbowWipe(section, 0, section.numPixels, wait, forwards);
+}
 
+void rainbowWipe(LEDSection section, int start, int end, int wait, bool forwards) {
+  // Hue of first pixel runs 3 complete loops through the color wheel.
+  // Color wheel has a range of 65536 but it's OK if we roll over, so
+  // just count from 0 to 3*65536. Adding 256 to firstPixelHue each time
+  // means we'll make 3*65536/256 = 768 passes through this outer loop:
+    if(forwards) {
+      for(int i=start; i<end; i++) { // For each pixel in strip...
+        int pixelHue = 0 + ((end - i - start) * 65536L / (end - start));
+        section[i]->setPixelColor(strip.gamma32(strip.ColorHSV(pixelHue)));
+        strip.show(); // Update strip with new contents
+        delay(wait);
+      }
+    } else {
+        for(int i=end; i>start; i--) { // For each pixel in strip...
+        int pixelHue = 0 + ((end - i - start) * 65536L / (end - start));
+        section[i]->setPixelColor(strip.gamma32(strip.ColorHSV(pixelHue)));
+        strip.show(); // Update strip with new contents
+        delay(wait);
+      }
+    }
+    // strip.show(); // Update strip with new contents
+    // delay(wait);  // Pause for a moment
+}
+
+void rainbow(LEDSection section, int wait, int cycles, bool forwards) {
+  // Hue of first pixel runs 3 complete loops through the color wheel.
+  // Color wheel has a range of 65536 but it's OK if we roll over, so
+  // just count from 0 to 3*65536. Adding 256 to firstPixelHue each time
+  // means we'll make 3*65536/256 = 768 passes through this outer loop:
+  for(long firstPixelHue = 0; firstPixelHue < cycles*65536; firstPixelHue += 256) {
+    Serial.println(firstPixelHue);
+    if(forwards) {
+      for(int i=0; i<section.numPixels; i++) { // For each pixel in strip...
+        // Offset pixel hue by an amount to make one full revolution of the
+        // color wheel (range of 65536) along the length of the strip
+        // (strip.numPixels() steps):
+        int pixelHue = firstPixelHue + (i * 65536L / section.numPixels);
+        // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
+        // optionally add saturation and value (brightness) (each 0 to 255).
+        // Here we're using just the single-argument hue variant. The result
+        // is passed through strip.gamma32() to provide 'truer' colors
+        // before assigning to each pixel:
+        section[i]->setPixelColor(strip.gamma32(strip.ColorHSV(pixelHue)));
+      }
+    } else {
+      for(int i=section.numPixels - 1; i>=0; i--) {
+        int pixelHue = firstPixelHue + ((section.numPixels - i) * 65536L / section.numPixels);
+        section[i]->setPixelColor(strip.gamma32(strip.ColorHSV(pixelHue)));
+      }
+    }
+    strip.show(); // Update strip with new contents
+    delay(wait);  // Pause for a moment
+  }
+}
 // // Function to set a specific section's color
 // void setSectionColor(Adafruit_NeoPixel &strip, int start, int end, uint32_t color) {
 //   for (int i = start; i <= end; i++) {
