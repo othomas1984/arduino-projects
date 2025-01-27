@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define PIN 6          // Pin for the LED strip
-#define NUM_LEDS 300   // Number of LEDs in the strip (increased to 120)
+#define NUM_LEDS 200   // Number of LEDs in the strip (increased to 120)
 #define LED_TYPE NEO_GRB + NEO_KHZ800
 Adafruit_NeoPixel strip(NUM_LEDS, PIN, LED_TYPE);
 
@@ -20,7 +20,7 @@ int moveInterval = 150;     // Time between moves (slower movement)
 unsigned long lastMoveTime = 0;
 
 // Hot/neon pink color (cartoon poison)
-uint32_t liquidColor = strip.Color(255, 0, 255); // Neon pink (Red: 255, Green: 0, Blue: 255)
+uint32_t liquidColor = strip.Color(0, 255, 0); // Neon pink (Red: 255, Green: 0, Blue: 255)
 
 struct Blob {
   int position;
@@ -32,7 +32,7 @@ Blob blobs[maxBlobs];  // Array to store up to 3 blobs
 
 void setup() {
   strip.begin();
-  strip.setBrightness(25);  // Set the brightness to 25
+  strip.setBrightness(10);  // Set the brightness to 25
   strip.show();  // Initialize all pixels to off
   randomSeed(analogRead(0));  // Seed the random number generator
 }
@@ -84,7 +84,7 @@ void moveBlob(int blobIndex) {
   fadeInBlob(blob);
 
   // Leave droplets behind if needed
-  leaveDroplets(blob);
+  // leaveDroplets(blob);
 }
 
 // Function to create a new blob
@@ -110,6 +110,15 @@ void fadeInBlob(Blob &blob) {
   for (int i = 0; i < blob.size; i++) {
     int pos = (blob.position + i) % NUM_LEDS;
     uint32_t color = fadeToColor(i, blob.size, liquidColor, fadeSteps);
+    if (i > blob.size - 3) {
+      color = strip.Color(0, 100, 0);
+    }
+    if (i > blob.size - 2) {
+      color = strip.Color(0, 75, 0);
+    }
+    if (i > blob.size - 1) {
+      color = strip.Color(0, 50, 0);
+    }
     strip.setPixelColor(pos, color);
   }
 }
@@ -127,6 +136,9 @@ void fadeOutBlob(Blob &blob) {
 // Function to calculate a fading color for the blob
 uint32_t fadeToColor(int step, int totalSteps, uint32_t color, int fadeSteps) {
   float fadeFactor = float(step) / float(totalSteps);
+  if (step > 6) {
+    // fadeFactor = 0.75;
+  }
   int r = (fadeFactor * ((color >> 16) & 0xFF));
   int g = (fadeFactor * ((color >>  8) & 0xFF));
   int b = (fadeFactor * (color & 0xFF));
