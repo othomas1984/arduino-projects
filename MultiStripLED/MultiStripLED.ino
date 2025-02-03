@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include "LEDSection.h"
+#include "Scene1.h"
 
 // Define constants
 const int PIXEL_COUNT = 300;    // Total number of LEDs
@@ -8,7 +9,7 @@ const int PIXEL_PIN = 6;       // Pin connected to the NeoPixel strip
 // Define the lengths of each section
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
-
+Scene1* scene1;
 
 int pixels1[] = {60, 63, 67, 66, 62, 64, 65, 69, 68, 61};  // Example: controlling pixels 2, 4, 6, 8, and 10
 LEDSection section6(&strip, 10, pixels1);
@@ -32,26 +33,21 @@ LEDSection sections[6] = {
 void setup() {
 
     Serial.begin(9600);
-    strip.begin();   // Initialize section 1
+    // scene1.setup();
+    // return;
+        strip.begin();   // Initialize section 1
     // strip.clear();   // Initialize section 3
 
     strip.setBrightness(3);
     strip.show();    // Turn off all LEDs in section 3
-}
-
-void eraseAll(int wait) {
-  for(int i = 0; i < PIXEL_COUNT; i++) {
-    strip.setPixelColor(i, strip.Color(0, 0, 0));
-    if(wait > 0) {
-      strip.show();
-      delay(wait);
-    }
-  }
+    // scene1 = new Scene1(&strip);
 }
 
 void loop() {
+  // scene1.loop();
+  // return;
   Serial.println("Start Loop");
-  // eraseAll(0);
+//   eraseAll(0);
 // return;
   // for (int i = 0; i < NUM_STRIPS - 4; i++) {
   //   rainbowWipe(strip, 0 + PIXELS_PER_STRIP * i, PIXELS_PER_STRIP + (PIXELS_PER_STRIP * i), 10, true);
@@ -281,3 +277,13 @@ void rainbow(LEDSection section, int wait, int cycles, bool forwards) {
 //     strip.setPixelColor(i, color);
 //   }
 // }
+
+void eraseAll(int wait) {
+  for(int i = 0; i < PIXEL_COUNT; i++) {
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
+    if(wait > 0) {
+      strip.show();
+      delay(wait);
+    }
+  }
+}
