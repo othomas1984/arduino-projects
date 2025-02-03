@@ -15,10 +15,10 @@ private:
   Adafruit_NeoPixel* strip;
   LEDSection sections[6];
   LEDSection fullStrip;
-  void rainbowWipe(Adafruit_NeoPixel* strip, int start, int end, int wait, bool forwards);
-  void rainbowWipe(LEDSection section, int wait, bool forwards);
-  void rainbowWipe(LEDSection section, int start, int end, int wait, bool forwards);
-  void rainbow(LEDSection section, int wait, int cycles, bool forwards);
+  void setSectionColor(LEDSection& section, uint32_t color);
+  void rainbowWipe(LEDSection& section, int wait, bool forwards);
+  void rainbowWipe(LEDSection& section, int start, int end, int wait, bool forwards);
+  void rainbow(LEDSection& section, int wait, int cycles, bool forwards);
   void eraseAll(int wait);
 };
 

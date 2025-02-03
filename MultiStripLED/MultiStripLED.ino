@@ -11,147 +11,17 @@ const int PIXEL_PIN = 6;       // Pin connected to the NeoPixel strip
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 Scene1* scene1;
 
-// int pixels1[] = {60, 63, 67, 66, 62, 64, 65, 69, 68, 61};  // Example: controlling pixels 2, 4, 6, 8, and 10
-// LEDSection section6(&strip, 10, pixels1);
-// int pixels2[] = {80, 81, 82, 83, 84, 85, 86, 87, 89, 88};  // Example: controlling pixels 2, 4, 6, 8, and 10
-// LEDSection section8(&strip, 10, pixels2);
-// LEDSection section10(&strip, 0, 299);
-// LEDSection sections[6] = {
-//     LEDSection(&strip, 0, 49),
-//     LEDSection(&strip, 50, 99),
-//     LEDSection(&strip, 100, 149),
-//     LEDSection(&strip, 150, 199),
-//     LEDSection(&strip, 200, 249),
-//     LEDSection(&strip, 250, 299)
-
-//     // section6,
-//     // section8,
-//     // LEDSection(&strip, 70, 79)
-// };
-// Create multiple instances for each section
-
 void setup() {
-
-    // Serial.begin(9600);
-    // scene1.setup();
-    // return;
-        strip.begin();   // Initialize section 1
-    // strip.clear();   // Initialize section 3
-
-    strip.setBrightness(30);
-    scene1 = new Scene1(&strip);
-      Serial.println("Call Startup");
-
-    scene1->setup();
-          Serial.println("Done Calling Startup");
-    strip.setPixelColor(15, 50, 50, 50);
-    // strip.show();    // Turn off all LEDs in section 3
+  strip.begin();   // Initialize section 1
+  strip.setBrightness(30);
+  scene1 = new Scene1(&strip);
+  scene1->setup();
+  strip.setPixelColor(15, 50, 50, 50);
 }
 
 void loop() {
-        Serial.println("Call Loop");
-
   scene1->loop();
-            Serial.println("Done Calling Loop");
-
-  // return;
-  // Serial.println("Start Loop");
-  // eraseAll(0);
-    strip.show();    // Turn off all LEDs in section 3
-return;
-  // for (int i = 0; i < NUM_STRIPS - 4; i++) {
-  //   rainbowWipe(strip, 0 + PIXELS_PER_STRIP * i, PIXELS_PER_STRIP + (PIXELS_PER_STRIP * i), 10, true);
-  // }
-//   for (int i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
-//     rainbowWipe(sections[i], 1, true);
-//   }
-//   // rainbowWipe(section1, 0, sizeof(pixels2) / sizeof(pixels2[0]), 100, true);
-//   // rainbowWipe(section2, 0, sizeof(pixels2) / sizeof(pixels2[0]), 100, true);
-//   // strip.setPixelColor(0, strip.Color(0, 0, 0));
-//   strip.show();
-//   // strips[1].show();
-//   // Show the changes
-//     // strip.show();
-
-//   delay(200); // Wait for 1 second
-//   // for (int i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
-//   //   // rainbowWipe(sections[i], 1, true);
-//   //   rainbow(sections[i], 10, 3, false);
-//   // }
-//   rainbow(section10, 5, 3, false);
-//   eraseAll(1);
-//   Serial.println("End Loop");
-
-//   // for (int i = NUM_STRIPS - 1; i >= 0; i--) {
-//   //   rainbowWipe(strip, 0 + PIXELS_PER_STRIP * i, PIXELS_PER_STRIP + (PIXELS_PER_STRIP * i), 10, false);
-//   //   // setSectionColor(strip, 0 + PIXELS_PER_STRIP * i, 20 + PIXELS_PER_STRIP * i, strip.Color(255, 0, 0));
-//   // }
-//   // // strips[1].show();
-//   // // Show the changes
-//   //   // strip.show();
-
-//   // delay(1000); // Wait for 1 second
-// // return;
-//   // for (int i = 0; i < NUM_STRIPS; i++) {
-//   //   setSectionColor(strips[i], 0, 29, strips[i].Color(255, 0, 0));
-//   //   // for (int j = 0; j <= 30; j++) {
-//   //   //   strips[i].setPixelColor(j, 255, 0, 0);
-//   //   // }
-//   //   strips[i].show();
-//   //   Serial.println(i);
-//   // }
-//   // Serial.println(6);
-
-//   // setSectionColor(strips[0], 0, SECTION_1_COUNT - 1, strips[0].Color(255, 255, 0));
-
-//   // Example: Set section 2 to green
-//   // setSectionColor(strip2, 0, SECTION_2_COUNT - 1, strip2.Color(0, 255, 0));
-
-//   // // Example: Set section 3 to blue
-//   // setSectionColor(strip3, 0, SECTION_3_COUNT - 1, strip3.Color(0, 0, 255));
-
-//   // // Example: Set section 4 to Yellow
-//   // setSectionColor(strip4, 0, SECTION_3_COUNT - 1, strip3.Color(255, 255, 0));
-
-//   // Show the updates
-//   // strips[0].show();
-//   // strip2.show();
-  // strip3.show();
-  // strip4.show();
-
-  // delay(1000); // Pause for 1 second
 }
-
-// void setupSections() {
-//   section1.begin();
-//   section2.begin();
-//   section3.begin();
-// }
-
-// void loopSections() {
-//   section1.setColor(section1.Color(255, 0, 0)); // Red
-//   section2.setColor(section2.Color(0, 255, 0)); // Green
-//   section3.setColor(section3.Color(0, 0, 255)); // Blue
-
-//   section1.show();
-//   section2.show();
-//   section3.show();
-
-//   delay(1000);
-// }
-
-// #include <Adafruit_NeoPixel.h>
-
-
-// void setupStrips() {
-//  // Turn off all LEDs in section 3
-// }
-
-// void setSectionColor(Adafruit_NeoPixel &strip, int start, int end, uint32_t color) {
-//   for (int i = start; i <= end; i++) {
-//     strip.setPixelColor(i, color);
-//   }
-// }
 
 // void loopStrips() {
 //   // setSectionColor(strip1, 0, SECTION_1_COUNT - 1, strip1.Color(255, 0, 0));

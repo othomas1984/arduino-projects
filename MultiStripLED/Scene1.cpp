@@ -21,54 +21,36 @@ Scene1::Scene1(Adafruit_NeoPixel* strip) :
 }
 
 void Scene1::setup() {
-  Serial.println("Start Setup");
-    // strip->setPixelColor(15, 50, 50, 50);
-    strip->show();
+  eraseAll(0);
 }
 
 void Scene1::loop() {
-  eraseAll(1);
-  strip->show();
   for (int i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
     rainbowWipe(sections[i], 1, true);
   }
-  delay(400);
-  sections[0][15]->setPixelColor(0,250,0);
-return;
-  delay(200); // Wait for 200ms
+  for (int i = 0; i < sizeof(sections) / sizeof(sections[0]); i++) {
+    int pixelHue = 0 + ((i) * 65536L / (sizeof(sections) / sizeof(sections[0])));
+    setSectionColor(sections[i], strip->gamma32(strip->ColorHSV(pixelHue)));
+    strip->show();
+    delay(250);
+  }
+  delay(1000); // Wait for 200ms
   rainbow(fullStrip, 5, 3, false);
   eraseAll(1);
 }
 
-void Scene1::rainbowWipe(Adafruit_NeoPixel* strip, int start, int end, int wait, bool forwards) {
-  // Hue of first pixel runs 3 complete loops through the color wheel.
-  // Color wheel has a range of 65536 but it's OK if we roll over, so
-  // just count from 0 to 3*65536. Adding 256 to firstPixelHue each time
-  // means we'll make 3*65536/256 = 768 passes through this outer loop:
-    if(forwards) {
-      for(int i=start; i<end; i++) { // For each pixel in strip...
-        int pixelHue = 0 + ((end - i - start) * 65536L / (end - start));
-        strip->setPixelColor(i, strip->gamma32(strip->ColorHSV(pixelHue)));
-        strip->show(); // Update strip with new contents
-        delay(wait);
-      }
-    } else {
-        for(int i=end; i>start; i--) { // For each pixel in strip...
-        int pixelHue = 0 + ((end - i - start) * 65536L / (end - start));
-        strip->setPixelColor(i, strip->gamma32(strip->ColorHSV(pixelHue)));
-        strip->show(); // Update strip with new contents
-        delay(wait);
-      }
-    }
-    // strip.show(); // Update strip with new contents
-    // delay(wait);  // Pause for a moment
+void Scene1::setSectionColor(LEDSection& section, uint32_t color) {
+  for (int i = 0; i < section.numPixels; i++) {
+    section[i]->setPixelColor(color);
+  }
 }
 
-void Scene1::rainbowWipe(LEDSection section, int wait, bool forwards) {
+
+void Scene1::rainbowWipe(LEDSection& section, int wait, bool forwards) {
   rainbowWipe(section, 0, section.numPixels, wait, forwards);
 }
 
-void Scene1::rainbowWipe(LEDSection section, int start, int end, int wait, bool forwards) {
+void Scene1::rainbowWipe(LEDSection& section, int start, int end, int wait, bool forwards) {
   // Hue of first pixel runs 3 complete loops through the color wheel.
   // Color wheel has a range of 65536 but it's OK if we roll over, so
   // just count from 0 to 3*65536. Adding 256 to firstPixelHue each time
@@ -102,7 +84,7 @@ void Scene1::rainbowWipe(LEDSection section, int start, int end, int wait, bool 
     // delay(wait);  // Pause for a moment
 }
 
-void Scene1::rainbow(LEDSection section, int wait, int cycles, bool forwards) {
+void Scene1::rainbow(LEDSection& section, int wait, int cycles, bool forwards) {
   // Hue of first pixel runs 3 complete loops through the color wheel.
   // Color wheel has a range of 65536 but it's OK if we roll over, so
   // just count from 0 to 3*65536. Adding 256 to firstPixelHue each time
