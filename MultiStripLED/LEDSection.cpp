@@ -17,7 +17,7 @@ LEDSection::LEDSection(Adafruit_NeoPixel* strip, int pixelStart, int pixelEnd) :
   // Serial.println(numPixels);
 }
 
-LEDSection::LEDSection(Adafruit_NeoPixel* strip, int numPixels, int* pixels) :
+LEDSection::LEDSection(Adafruit_NeoPixel* strip, int numPixels, const int* pixels) :
   strip(strip), 
   numPixels(numPixels)
 {
@@ -27,14 +27,18 @@ LEDSection::LEDSection(Adafruit_NeoPixel* strip, int numPixels, int* pixels) :
   }
 }
 
-void LEDSection::eraseAll(int wait) {
+void LEDSection::eraseAll(int wait, uint32_t color) {
   for(int i = 0; i < numPixels; i++) {
-    ledArray[i]->setPixelColor(strip->Color(0, 0, 0));
+    ledArray[i]->setPixelColor(color);
     if(wait > 0) {
       strip->show();
       delay(wait);
     }
   }
+}
+
+void LEDSection::eraseAll(int wait) {
+  eraseAll(wait, strip->Color(0, 0, 0));
 }
 
 void LEDSection::setSectionColor(uint32_t color) {
@@ -66,15 +70,16 @@ void LEDSection::rainbowWipe(int start, int end, int wait, bool forwards) {
 }
 
 void LEDSection::rainbow(int wait, int cycles, bool forwards) {
-  for(long firstPixelHue = 0; firstPixelHue < cycles*65536; firstPixelHue += 256) {
+  for(long offset = 0; offset < cycles * numPixels; offset += 1) {
     if(forwards) {
       for(int i=0; i<numPixels; i++) { // For each pixel in strip...
-        int pixelHue = firstPixelHue + (i * 65536L / numPixels);
+        int pixelHue = ((offset + i) * 65536 / numPixels) % 65536;
         ledArray[i]->setPixelColor(strip->gamma32(strip->ColorHSV(pixelHue)));
       }
     } else {
-      for(int i=numPixels - 1; i>=0; i--) {
-        int pixelHue = firstPixelHue + ((numPixels - i) * 65536L / numPixels);
+      for(int i=numPixels - 1; i>=0; i--) { // For each pixel in strip...
+        int pixelHue = (((cycles * numPixels - offset) + i - 9) * 65536 / numPixels) % 65536;
+        // int pixelHue = offset + ((numPixels - i) * 65536L / numPixels);
         ledArray[i]->setPixelColor(strip->gamma32(strip->ColorHSV(pixelHue)));
       }
     }
@@ -111,4 +116,26 @@ void LEDSection::kelvinToRGB(int temperature, int &red, int &green, int &blue) {
         blue = 138.52 * log(temp - 10) - 305.04;
         blue = constrain(blue, 0, 255);
     }
+}
+
+void LEDSection::rotate(bool forwards) {
+  if(forwards) {
+    for(int i=0; i<numPixels; i++) { // For each pixel in strip...
+      int indexToCopy = i + 1;
+      if(indexToCopy == numPixels) {
+        indexToCopy = 0;
+      }
+      uint32_t newColor = ledArray[indexToCopy]->color;
+      ledArray[i]->setPixelColor(newColor);
+    }
+  } else {
+    for(int i=numPixels-1; i>=0; i--) { // For each pixel in strip...
+      int indexToCopy = i - 1;
+      if(indexToCopy == -1) {
+        indexToCopy = numPixels-1;
+      }
+      uint32_t newColor = ledArray[indexToCopy]->color;
+      ledArray[i]->setPixelColor(newColor);
+    }
+  }
 }

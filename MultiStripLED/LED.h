@@ -10,6 +10,7 @@ public:
   int pixelNum;
   void setPixelColor(uint32_t color);
   void setPixelColor(int red, int green, int blue);
+  uint32_t color;
 
 private:
   Adafruit_NeoPixel* strip;
