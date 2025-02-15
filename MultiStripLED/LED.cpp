@@ -9,11 +9,6 @@ LED::LED(Adafruit_NeoPixel* strip, int pixelNum) :
     // Serial.println(pixelNum);
 }
 
-const LED* LEDSection::operator[](int index) const {
-    // Serial.println(index);
-    return ledArray[index];  // Return a const reference for read-only access
-}
-
 void LED::setPixelColor(uint32_t color) {
   // Serial.println(pixelNum);
   strip->setPixelColor(pixelNum, color);
