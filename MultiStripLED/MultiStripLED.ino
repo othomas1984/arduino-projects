@@ -7,7 +7,7 @@
 // Define constants
 const int PIXEL_COUNT1 = 300;    // Total number of LEDs
 const int PIXEL_COUNT2 = 150;    // Total number of LEDs
-const int PIXEL_PIN_1 = 4;       // Pin connected to the NeoPixel strip
+const int PIXEL_PIN_1 = 16;       // Pin connected to the NeoPixel strip
 const int PIXEL_PIN_2 = 2;       // Pin connected to the NeoPixel strip
 
 Adafruit_NeoPixel strip1(PIXEL_COUNT1, PIXEL_PIN_1, NEO_GRB + NEO_KHZ800);
@@ -41,7 +41,7 @@ void setup2() {
 }
 
 void setup3() {
-  strip1.setBrightness(40);
+  strip1.setBrightness(10);
   gridScene = new Grid(&strip1);
   strip1.show();
 }
