@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
-#define PIN 6          // Pin for the LED strip
-#define NUM_LEDS 200   // Number of LEDs in the strip (increased to 120)
+#define PIN 16          // Pin for the LED strip
+#define NUM_LEDS 196   // Number of LEDs in the strip (increased to 120)
 #define LED_TYPE NEO_GRB + NEO_KHZ800
 Adafruit_NeoPixel strip(NUM_LEDS, PIN, LED_TYPE);
 
@@ -20,7 +20,7 @@ int moveInterval = 150;     // Time between moves (slower movement)
 unsigned long lastMoveTime = 0;
 
 // Hot/neon pink color (cartoon poison)
-uint32_t liquidColor = strip.Color(0, 255, 0); // Neon pink (Red: 255, Green: 0, Blue: 255)
+uint32_t liquidColor = strip.Color(255, 0, 255); // Neon pink (Red: 255, Green: 0, Blue: 255)
 
 struct Blob {
   int position;
@@ -111,13 +111,13 @@ void fadeInBlob(Blob &blob) {
     int pos = (blob.position + i) % NUM_LEDS;
     uint32_t color = fadeToColor(i, blob.size, liquidColor, fadeSteps);
     if (i > blob.size - 3) {
-      color = strip.Color(0, 100, 0);
+      color = strip.Color(100, 0, 100);
     }
     if (i > blob.size - 2) {
-      color = strip.Color(0, 75, 0);
+      color = strip.Color(75, 0, 75);
     }
     if (i > blob.size - 1) {
-      color = strip.Color(0, 50, 0);
+      color = strip.Color(50, 0, 50);
     }
     strip.setPixelColor(pos, color);
   }
