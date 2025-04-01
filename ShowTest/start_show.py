@@ -5,7 +5,7 @@ from threading import Thread
 
 # === CONFIGURATION ===
 SERIAL_PORT = "/dev/cu.usbmodem2101"  # Update as needed
-BAUD_RATE = 115200
+BAUD_RATE = 9600
 SONG_LENGTH_SECONDS = 200
 
 # === FUNCTION: Read Serial Responses ===
@@ -18,6 +18,8 @@ def read_serial(ser):
         except Exception as e:
             print(f"[Serial Read Error] {e}")
             break
+subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+subprocess.run(["osascript", "-e", 'tell application "Spotify" to previous track'])
 
 # === Open Serial First (Arduino resets) ===
 print("Connecting to Arduino...")
@@ -47,7 +49,7 @@ try:
         message = f"T:{elapsed_ms}\n"
         ser.write(message.encode())
         print(f"[Host →] Sending: {message.strip()}")
-        time.sleep(3)
+        time.sleep(1)
 
         if elapsed_sec > SONG_LENGTH_SECONDS + 5:
             print("Done syncing. Closing serial.")
