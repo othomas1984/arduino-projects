@@ -5,7 +5,7 @@
 #define DISPLAY_LEDS 48  // Each tank uses 48 LEDs
 // #define BASE_COLOR CRGB(200, 0, 250)  // Base pink
 // #define BLUE_COLOR CRGB(200, 0, 250)  // Deep cobalt blue
-#define BASE_COLOR CRGB(0, 250, 250)  // Base pink
+#define BASE_COLOR CRGB(0, 150, 250)  // Base pink
 #define BLUE_COLOR CRGB(0, 0, 250)  // Deep cobalt blue
 
 CRGB leds[NUM_LEDS];
