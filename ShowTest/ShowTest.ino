@@ -266,9 +266,18 @@ public:
   CRGBPalette16 palette;
   uint8_t brightnessPercent = 100;
 
-  SegmentRainbowChaseAnimation(const char* pattern, uint16_t bpm100, bool isReversed = false)
-    : pattern(pattern), bpm100(bpm100), isReversed(isReversed), totalDuration(0) {
-    palette = RainbowColors_p;
+  SegmentRainbowChaseAnimation(
+    const char* pattern,
+    uint16_t bpm100,
+    const CRGBPalette16& palette,
+    bool isReversed = false
+  )
+    : pattern(pattern),
+      bpm100(bpm100),
+      palette(palette),
+      isReversed(isReversed),
+      totalDuration(0) {
+
     for (uint16_t i = 0; pattern[i]; i++) {
       char c = pattern[i];
       if (c == '|' || c == ' ') continue;
@@ -394,9 +403,18 @@ public:
   bool isReversed;
   CRGBPalette16 palette;
 
-  TheatreChasePaletteBeatAnimation(const char* pattern, uint16_t bpm100, bool isReversed = false)
-    : pattern(pattern), bpm100(bpm100), isReversed(isReversed), totalDuration(0) {
-    palette = RainbowColors_p; // Or change to a custom palette
+  TheatreChasePaletteBeatAnimation(
+    const char* pattern,
+    uint16_t bpm100,
+    const CRGBPalette16& palette,
+    bool isReversed = false
+  )
+    : pattern(pattern),
+      bpm100(bpm100),
+      palette(palette),
+      isReversed(isReversed),
+      totalDuration(0) {
+
     for (uint16_t i = 0; pattern[i]; i++) {
       char c = pattern[i];
       if (c == '|' || c == ' ') continue;
@@ -639,14 +657,25 @@ void initTestShow() {
   Serial.println("Init: Cue2");
 
   Cue* cue1point7 = new Cue(&scene1, 4000, bpm);
-  auto halfNotesReverseRainbowChase = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, true);
+  CRGBPalette16 firePalette = CRGBPalette16(CRGB::Red, CRGB::Red, CRGB::Orange, CRGB::Yellow);
+  auto halfNotesReverseFireChase = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, firePalette, true);
+  halfNotesReverseFireChase->addSegment(scene1Segment2, 50);
+  halfNotesReverseFireChase->addSegment(scene1Segment3, 50);
+  halfNotesReverseFireChase->addSegment(scene1Segment4, 50);
+  halfNotesReverseFireChase->addSegment(scene1Segment5, 50);
+  halfNotesReverseFireChase->addSegment(scene1Segment6, 50);
+  cue1point7->addAnimation(halfNotesReverseFireChase);
+  testShow.addCue(cue1point7);
+  
+  Cue* cue1point75 = new Cue(&scene1, 4000, bpm);
+  auto halfNotesReverseRainbowChase = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, RainbowColors_p, false);
   halfNotesReverseRainbowChase->addSegment(scene1Segment2, 50);
   halfNotesReverseRainbowChase->addSegment(scene1Segment3, 50);
   halfNotesReverseRainbowChase->addSegment(scene1Segment4, 50);
   halfNotesReverseRainbowChase->addSegment(scene1Segment5, 50);
   halfNotesReverseRainbowChase->addSegment(scene1Segment6, 50);
-  cue1point7->addAnimation(halfNotesReverseRainbowChase);
-  testShow.addCue(cue1point7);
+  cue1point75->addAnimation(halfNotesReverseRainbowChase);
+  testShow.addCue(cue1point75);
 
   Cue* cue1point8 = new Cue(&scene1, 4000, bpm);
   auto segmentChase = new SegmentTheatreChaseBeatAnimation("| SSS |", bpm, CRGB::Blue);
@@ -660,7 +689,7 @@ void initTestShow() {
   testShow.addCue(cue1point8);
 
   Cue* cue1point9 = new Cue(&scene1, 4000, bpm);
-  auto segmentChase2 = new SegmentTheatreChaseBeatAnimation("| SSS |", bpm, CRGB::Green, true);
+  auto segmentChase2 = new SegmentRainbowChaseAnimation("| SSS |", bpm, RainbowColors_p, true);
   segmentChase2->addSegment(scene1Segment3, 50);
   segmentChase2->addSegment(scene1Segment2, 50);
   segmentChase2->addSegment(scene1Segment6, 50);
