@@ -49,7 +49,7 @@ try:
         message = f"T:{elapsed_ms}\n"
         ser.write(message.encode())
         print(f"[Host →] Sending: {message.strip()}")
-        time.sleep(5)
+        time.sleep(10)
 
         if elapsed_sec > SONG_LENGTH_SECONDS + 5:
             print("Done syncing. Closing serial.")

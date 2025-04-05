@@ -254,37 +254,24 @@ Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *sce
 Show loseYourselfShow, testShow;
 
 void initScene1Segments() {
-  // const uint16_t piano1LEDs[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29};
-  // StripLEDConfig piano1Cfg[] = {{1, piano1LEDs, 15}};
-  // piano1Segment = scene.createSegment(piano1Cfg, 1);
-
-  // const uint16_t piano2LEDs[] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28};
-  // StripLEDConfig piano2Cfg[] = {{1, piano2LEDs, 15}};
-  // piano2Segment = scene.createSegment(piano2Cfg, 1);
-  // const uint16_t leds1[] = {0,1};
-  // StripLEDConfig leds1Cfg[] = {{1, leds1, 2}};
-  // scene1Segment1 = scene.createSegment(leds1Cfg, 1);
   const uint16_t leds1[] = {0,1};
   StripLEDConfig leds1Cfg[] = {{1, leds1, 2}};
-  scene1Segment1 = scene.createSegment(leds1Cfg, 1);
-  const uint16_t leds2[] = {2,3};
-  StripLEDConfig leds2Cfg[] = {{1, leds2, 2}};
-  scene1Segment2 = scene.createSegment(leds2Cfg, 1);
-  // const uint16_t leds2[] = {2,3};
-  // StripLEDConfig leds2Cfg[] = {{1, leds2, 2}};
-  // scene1Segment2 = scene.createSegment(leds2Cfg, 1);
-  // const uint16_t leds3[] = {38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66};
-  // StripLEDConfig leds3Cfg[] = {{1, leds3, 29}};
-  // scene1Segment3 = scene.createSegment(leds3Cfg, 1);
-  // const uint16_t leds4[] = {67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102};
-  // StripLEDConfig leds4Cfg[] = {{1, leds4, 36}};
-  // scene1Segment4 = scene.createSegment(leds4Cfg, 1);
-  // const uint16_t leds5[] = {103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131};
-  // StripLEDConfig leds5Cfg[] = {{1, leds5, 29}};
-  // scene1Segment5 = scene.createSegment(leds5Cfg, 1);
-  // const uint16_t leds6[] = {132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160};
-  // StripLEDConfig leds6Cfg[] = {{1, leds6, 29}};
-  // scene1Segment6 = scene.createSegment(leds6Cfg, 1);
+  scene1Segment1 = scene1.createSegment(leds1Cfg, 1);
+  const uint16_t leds2[] = {2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37};
+  StripLEDConfig leds2Cfg[] = {{1, leds2, 36}};
+  scene1Segment2 = scene1.createSegment(leds2Cfg, 1);
+  const uint16_t leds3[] = {38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66};
+  StripLEDConfig leds3Cfg[] = {{1, leds3, 29}};
+  scene1Segment3 = scene1.createSegment(leds3Cfg, 1);
+  const uint16_t leds4[] = {67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102};
+  StripLEDConfig leds4Cfg[] = {{1, leds4, 36}};
+  scene1Segment4 = scene1.createSegment(leds4Cfg, 1);
+  const uint16_t leds5[] = {103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131};
+  StripLEDConfig leds5Cfg[] = {{1, leds5, 29}};
+  scene1Segment5 = scene1.createSegment(leds5Cfg, 1);
+  const uint16_t leds6[] = {132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160};
+  StripLEDConfig leds6Cfg[] = {{1, leds6, 29}};
+  scene1Segment6 = scene1.createSegment(leds6Cfg, 1);
 }
 
 void initSegments() {
@@ -367,44 +354,89 @@ void initLoseYourselfShow() {
 }
 
 void initTestShow() {
-  uint16_t bpm = 6000;
+  uint16_t bpm = 12000;
 
-  Cue* cue1 = new Cue(&scene, 8000, bpm);
+  Cue* cue1 = new Cue(&scene1, 10000, bpm);
   auto wholeNotes = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
-  wholeNotes->addSegment(scene1Segment2, 100);
+  wholeNotes->addSegment(scene1Segment1, 50);
   cue1->addAnimation(wholeNotes);
   testShow.addCue(cue1);
   Serial.println("Init: Cue1");
 
-  // Cue* silence = new Cue(&scene, 2000 + 1000, bpm);
-  // testShow.addCue(silence);
+  Cue* cueIntro = new Cue(&scene, 2000, bpm);
+  auto piano1Intro = new PatternBeatAnimation("| Ee Ee Ee Ee | Ee Ee ee SsSs | Ee Ee Ee Ee | Ee Ee q q |", bpm, CRGB::Blue);
+  auto piano2Intro = new PatternBeatAnimation("| eE eE eE eE | eE eE ee sSsS | eE eE eE eE | eE ee q q |", bpm, CRGB::Blue);
+  piano1Intro->addSegment(piano1Segment, 100);
+  piano2Intro->addSegment(piano2Segment, 100);
+  cueIntro->addAnimation(piano1Intro);
+  cueIntro->addAnimation(piano2Intro);
+  testShow.addCue(cueIntro);
 
-  // Cue* cueIntro = new Cue(&scene, 29100, bpm);
-  // auto piano1Intro = new PatternBeatAnimation("| Ee Ee Ee Ee | Ee Ee ee SsSs | Ee Ee Ee Ee | Ee Ee q q |", bpm, CRGB::Blue);
-  // auto piano2Intro = new PatternBeatAnimation("| eE eE eE eE | eE eE ee sSsS | eE eE eE eE | eE ee q q |", bpm, CRGB::Blue);
-  // piano1Intro->addSegment(piano1Segment, 100);
-  // piano2Intro->addSegment(piano2Segment, 100);
-  // cueIntro->addAnimation(piano1Intro);
-  // cueIntro->addAnimation(piano2Intro);
-  // testShow.addCue(cueIntro);
-
-  Cue* cue2 = new Cue(&scene, 8000, bpm);
-  auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::Orange);
-  // auto wholeNotes2 = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
-  // wholeNotes2->addSegment(scene1Segment1, 100);
-  halfNotes->addSegment(scene1Segment2, 100);
-  // cue2->addAnimation(wholeNotes2);
+  Cue* cue2 = new Cue(&scene1, 10000, bpm);
+  auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::DarkOrange);
+  halfNotes->addSegment(scene1Segment2, 50);
+  cue2->addAnimation(wholeNotes);
   cue2->addAnimation(halfNotes);
   testShow.addCue(cue2);
   Serial.println("Init: Cue2");
+
+  Cue* cue3 = new Cue(&scene1, 10000, bpm);
+  auto quarterNotes = new PatternBeatAnimation("| Q q Q q |", bpm, CRGB::Yellow);
+  quarterNotes->addSegment(scene1Segment3, 50);
+  cue3->addAnimation(wholeNotes);
+  cue3->addAnimation(halfNotes);
+  cue3->addAnimation(quarterNotes);
+  testShow.addCue(cue3);
+  Serial.println("Init: Cue2");
+
+  Cue* cue4 = new Cue(&scene1, 10000, bpm);
+  auto eigthNotes = new PatternBeatAnimation("| Ee Ee Ee Ee |", bpm, CRGB::Green);
+  eigthNotes->addSegment(scene1Segment4, 50);
+  cue4->addAnimation(wholeNotes);
+  cue4->addAnimation(halfNotes);
+  cue4->addAnimation(quarterNotes);
+  cue4->addAnimation(eigthNotes);
+  testShow.addCue(cue4);
+  Serial.println("Init: Cue2");
+
+  Cue* cue5 = new Cue(&scene1, 10000, bpm);
+  auto sixteenthNotes = new PatternBeatAnimation("| SsSs SsSs SsSs SsSs |", bpm, CRGB::Blue);
+  sixteenthNotes->addSegment(scene1Segment5, 50);
+  cue5->addAnimation(wholeNotes);
+  cue5->addAnimation(halfNotes);
+  cue5->addAnimation(quarterNotes);
+  cue5->addAnimation(eigthNotes);
+  cue5->addAnimation(sixteenthNotes);
+  testShow.addCue(cue5);
+  Serial.println("Init: Cue2");
+
+  Cue* cue6 = new Cue(&scene1, 10000, bpm);
+  auto thirtysecondNotes = new PatternBeatAnimation("| TtTtTtTt TtTtTtTt TtTtTtTt TtTtTtTt |", bpm, CRGB::Purple);
+  thirtysecondNotes->addSegment(scene1Segment6, 50);
+  cue6->addAnimation(wholeNotes);
+  cue6->addAnimation(halfNotes);
+  cue6->addAnimation(quarterNotes);
+  cue6->addAnimation(eigthNotes);
+  cue6->addAnimation(sixteenthNotes);
+  cue6->addAnimation(thirtysecondNotes);
+  testShow.addCue(cue6);
+  Serial.println("Init: Cue2");
+
+  for (int i = 0; i < 9; i++) {
+    testShow.addCue(cue1);
+    testShow.addCue(cue2);
+    testShow.addCue(cue3);
+    testShow.addCue(cue4);
+    testShow.addCue(cue5);
+    testShow.addCue(cue6);
+  }
 }
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Setup");
   FastLED.addLeds<WS2812B, 21, RGB>(strip1, STRIP1_LEDS);
-  FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);
-  FastLED.setBrightness(51); // ~20%
+  FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);  FastLED.setBrightness(51); // ~20%
   initSegments();
   Serial.println("Init: Segments");
   initScene1Segments();
@@ -415,29 +447,46 @@ void setup() {
   Serial.println("Ready. Send 's' to start the show or 'T:<ms>' to sync.");
 }
 
+bool parsePrefixedInt(const char* input, const char* prefix, uint32_t& outValue) {
+  size_t prefixLen = strlen(prefix);
+  if (strncmp(input, prefix, prefixLen) != 0) return false;
+
+  const char* digits = input + prefixLen;
+  if (*digits == '\0') return false; // No number after prefix
+
+  // Ensure all remaining characters are digits
+  for (const char* p = digits; *p; ++p) {
+    if (!isdigit(*p)) return false;
+  }
+
+  outValue = strtoul(digits, NULL, 10);
+  return true;
+}
+
 void loop() {
   if (Serial.available()) {
     size_t len = Serial.readBytesUntil('\n', serialBuffer, sizeof(serialBuffer) - 1);
     serialBuffer[len] = '\0';
+
+    Serial.print("[Serial] Received: ");
+    Serial.println(serialBuffer);
+
     if (len > 2 && strncmp(serialBuffer, "T:", 2) == 0) {
-      Serial.print("[Serial] Received: ");
-      Serial.println(serialBuffer);
-
-      char* p = serialBuffer + 2;
-      bool valid = true;
-      while (*p) {
-        if (!isdigit(*p)) {
-          valid = false;
-          break;
-        }
-        p++;
-      }
-
-      if (valid) {
-        uint32_t reportedMillis = strtoul(serialBuffer + 2, NULL, 10);
-        if (showStarted) syncToSerialTime(reportedMillis);
+      uint32_t reportedMillis;
+      if (parsePrefixedInt(serialBuffer, "T:", reportedMillis)) {
+        Serial.print("Parsed T: ");
+        Serial.println(reportedMillis);
       } else {
         Serial.println("[Serial] Ignored: Invalid T:<ms> format");
+      }
+    } else if (len > 2 && strncmp(serialBuffer, "D:", 2) == 0) {
+      uint32_t dimmerSetting;
+      if (parsePrefixedInt(serialBuffer, "D:", dimmerSetting) && dimmerSetting >= 0 && dimmerSetting <256 ) {
+        Serial.print("Parsed D: ");
+        Serial.println(dimmerSetting);
+        FastLED.setBrightness(dimmerSetting);
+      } else {
+        Serial.println("[Serial] Ignored: Invalid D:[0-255] format");
       }
     } else if (len == 1 && (serialBuffer[0] == 's' || serialBuffer[0] == 'S')) {
       showStartMillis = millis();
@@ -447,6 +496,14 @@ void loop() {
         strip1[i] = CRGB::Black;
       }
       Serial.println("Show started!");
+    } else if (len == 1 && (serialBuffer[0] == 'x' || serialBuffer[0] == 'X')) {
+      showStartMillis = 0;
+      lastLogMillis = millis();
+      showStarted = false;
+      for (uint8_t i = 0; i < STRIP1_LEDS; i++) {
+        strip1[i] = CRGB::Black;
+      }
+      Serial.println("Show stopped!");
     }
   }
 
@@ -454,7 +511,6 @@ void loop() {
     unsigned long elapsedMillis = millis() - showStartMillis;
     // loseYourselfShow.update(elapsedMillis);
     testShow.update(elapsedMillis);
-    FastLED.show();
 
     if (millis() - lastLogMillis >= 1000) {
       lastLogMillis += 1000;
@@ -463,4 +519,6 @@ void loop() {
       Serial.println("s");
     }
   }
+
+  FastLED.show();
 } // end of loop
