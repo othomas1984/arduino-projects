@@ -15,9 +15,9 @@
 // On a high -> low transition the button press logic will execute.
 #define BUTTON_PIN   2
 
-#define PIXEL_PIN    17  // Digital IO pin connected to the NeoPixels.
+#define PIXEL_PIN    21  // Digital IO pin connected to the NeoPixels.
 
-#define PIXEL_COUNT 29  // Number of NeoPixels
+#define PIXEL_COUNT 10  // Number of NeoPixels
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, NEO_RGB + NEO_KHZ800);

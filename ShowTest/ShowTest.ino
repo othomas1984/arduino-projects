@@ -1,6 +1,6 @@
 #include <FastLED.h>
 
-#define STRIP1_LEDS 67
+#define STRIP1_LEDS 161
 #define STRIP2_LEDS 29
 #define MAX_LEDS_PER_SEGMENT 64
 #define MAX_SEGMENTS_PER_SCENE 8
@@ -248,49 +248,74 @@ public:
 
 // ----- Show Definition: "Lose Yourself" -----
 
-Scene scene;
+Scene scene, scene1;
 Segment *piano1Segment, *piano2Segment, *drumSegment, *baseSegment, *stringSegment;
-Show loseYourselfShow;
+Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *scene1Segment5, *scene1Segment6, *scene1Segment7;
+Show loseYourselfShow, testShow;
+
+void initScene1Segments() {
+  // const uint16_t piano1LEDs[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29};
+  // StripLEDConfig piano1Cfg[] = {{1, piano1LEDs, 15}};
+  // piano1Segment = scene.createSegment(piano1Cfg, 1);
+
+  // const uint16_t piano2LEDs[] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28};
+  // StripLEDConfig piano2Cfg[] = {{1, piano2LEDs, 15}};
+  // piano2Segment = scene.createSegment(piano2Cfg, 1);
+  // const uint16_t leds1[] = {0,1};
+  // StripLEDConfig leds1Cfg[] = {{1, leds1, 2}};
+  // scene1Segment1 = scene.createSegment(leds1Cfg, 1);
+  const uint16_t leds1[] = {0,1};
+  StripLEDConfig leds1Cfg[] = {{1, leds1, 2}};
+  scene1Segment1 = scene.createSegment(leds1Cfg, 1);
+  const uint16_t leds2[] = {2,3};
+  StripLEDConfig leds2Cfg[] = {{1, leds2, 2}};
+  scene1Segment2 = scene.createSegment(leds2Cfg, 1);
+  // const uint16_t leds2[] = {2,3};
+  // StripLEDConfig leds2Cfg[] = {{1, leds2, 2}};
+  // scene1Segment2 = scene.createSegment(leds2Cfg, 1);
+  // const uint16_t leds3[] = {38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66};
+  // StripLEDConfig leds3Cfg[] = {{1, leds3, 29}};
+  // scene1Segment3 = scene.createSegment(leds3Cfg, 1);
+  // const uint16_t leds4[] = {67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102};
+  // StripLEDConfig leds4Cfg[] = {{1, leds4, 36}};
+  // scene1Segment4 = scene.createSegment(leds4Cfg, 1);
+  // const uint16_t leds5[] = {103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131};
+  // StripLEDConfig leds5Cfg[] = {{1, leds5, 29}};
+  // scene1Segment5 = scene.createSegment(leds5Cfg, 1);
+  // const uint16_t leds6[] = {132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160};
+  // StripLEDConfig leds6Cfg[] = {{1, leds6, 29}};
+  // scene1Segment6 = scene.createSegment(leds6Cfg, 1);
+}
 
 void initSegments() {
   const uint16_t piano1LEDs[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29};
   StripLEDConfig piano1Cfg[] = {{1, piano1LEDs, 15}};
   piano1Segment = scene.createSegment(piano1Cfg, 1);
-  
+
   const uint16_t piano2LEDs[] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28};
   StripLEDConfig piano2Cfg[] = {{1, piano2LEDs, 15}};
   piano2Segment = scene.createSegment(piano2Cfg, 1);
 
-  const uint16_t drumLEDs1[] = {30,31,32,33,34,35,36,37,38,39,
-                                40,41,42,43,44,45,46,47,48,49};
+  const uint16_t drumLEDs1[] = {30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49};
   const uint16_t drumLEDs2[] = {0,1,2,3,4,5,6,7,8,9};
-  StripLEDConfig drumCfg[] = {
-    {1, drumLEDs1, 20},
-    {2, drumLEDs2, 10}
-  };
+  StripLEDConfig drumCfg[] = {{1, drumLEDs1, 20}, {2, drumLEDs2, 10}};
   drumSegment = scene.createSegment(drumCfg, 2);
 
-  const uint16_t stringLEDs1[] = {56,57,58,59,
-                                  60,61,62,63,64,65,66};
+  const uint16_t stringLEDs1[] = {56,57,58,59,60,61,62,63,64,65,66};
   const uint16_t stringLEDs2[] = {15,16,17,18,19,20,21,22,23,24,25,26,27,28};
-  StripLEDConfig stringCfg[] = {
-    {1, stringLEDs1, 11},
-    {2, stringLEDs2, 14}
-  };
+  StripLEDConfig stringCfg[] = {{1, stringLEDs1, 11}, {2, stringLEDs2, 14}};
   stringSegment = scene.createSegment(stringCfg, 2);
 
   const uint16_t baseLEDs1[] = {50,51,52,53,54,55};
-  StripLEDConfig baseCfg[] = {
-    {1, baseLEDs1, 6}
-  };
+  StripLEDConfig baseCfg[] = {{1, baseLEDs1, 6}};
   baseSegment = scene.createSegment(baseCfg, 1);
 }
 
-void initShow() {
+void initLoseYourselfShow() {
   uint16_t bpmIntro = 6593;
   uint16_t bpmMain  = 8572;
 
-  Cue* silence = new Cue(&scene, 2000 + 900, bpmIntro);
+  Cue* silence = new Cue(&scene, 2000 + 1000, bpmIntro);
   loseYourselfShow.addCue(silence);
 
   Cue* cueIntro = new Cue(&scene, 29100, bpmIntro);
@@ -341,13 +366,52 @@ void initShow() {
   loseYourselfShow.addCue(cueOutro);
 }
 
+void initTestShow() {
+  uint16_t bpm = 6000;
+
+  Cue* cue1 = new Cue(&scene, 8000, bpm);
+  auto wholeNotes = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
+  wholeNotes->addSegment(scene1Segment2, 100);
+  cue1->addAnimation(wholeNotes);
+  testShow.addCue(cue1);
+  Serial.println("Init: Cue1");
+
+  // Cue* silence = new Cue(&scene, 2000 + 1000, bpm);
+  // testShow.addCue(silence);
+
+  // Cue* cueIntro = new Cue(&scene, 29100, bpm);
+  // auto piano1Intro = new PatternBeatAnimation("| Ee Ee Ee Ee | Ee Ee ee SsSs | Ee Ee Ee Ee | Ee Ee q q |", bpm, CRGB::Blue);
+  // auto piano2Intro = new PatternBeatAnimation("| eE eE eE eE | eE eE ee sSsS | eE eE eE eE | eE ee q q |", bpm, CRGB::Blue);
+  // piano1Intro->addSegment(piano1Segment, 100);
+  // piano2Intro->addSegment(piano2Segment, 100);
+  // cueIntro->addAnimation(piano1Intro);
+  // cueIntro->addAnimation(piano2Intro);
+  // testShow.addCue(cueIntro);
+
+  Cue* cue2 = new Cue(&scene, 8000, bpm);
+  auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::Orange);
+  // auto wholeNotes2 = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
+  // wholeNotes2->addSegment(scene1Segment1, 100);
+  halfNotes->addSegment(scene1Segment2, 100);
+  // cue2->addAnimation(wholeNotes2);
+  cue2->addAnimation(halfNotes);
+  testShow.addCue(cue2);
+  Serial.println("Init: Cue2");
+}
+
 void setup() {
   Serial.begin(9600);
-  FastLED.addLeds<WS2812B, 16, RGB>(strip1, STRIP1_LEDS);
-  FastLED.addLeds<WS2812B, 17, RGB>(strip2, STRIP2_LEDS);
+  Serial.println("Setup");
+  FastLED.addLeds<WS2812B, 21, RGB>(strip1, STRIP1_LEDS);
+  FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);
   FastLED.setBrightness(51); // ~20%
   initSegments();
-  initShow();
+  Serial.println("Init: Segments");
+  initScene1Segments();
+  Serial.println("Init: Scene1Segments");
+  initLoseYourselfShow();
+  initTestShow();
+  Serial.println("Init: TestShow");
   Serial.println("Ready. Send 's' to start the show or 'T:<ms>' to sync.");
 }
 
@@ -377,15 +441,19 @@ void loop() {
       }
     } else if (len == 1 && (serialBuffer[0] == 's' || serialBuffer[0] == 'S')) {
       showStartMillis = millis();
-      lastLogMillis = 0;
+      lastLogMillis = millis();
       showStarted = true;
+      for (uint8_t i = 0; i < STRIP1_LEDS; i++) {
+        strip1[i] = CRGB::Black;
+      }
       Serial.println("Show started!");
     }
   }
 
   if (showStarted) {
     unsigned long elapsedMillis = millis() - showStartMillis;
-    loseYourselfShow.update(elapsedMillis);
+    // loseYourselfShow.update(elapsedMillis);
+    testShow.update(elapsedMillis);
     FastLED.show();
 
     if (millis() - lastLogMillis >= 1000) {

@@ -4,7 +4,7 @@ import subprocess
 from threading import Thread
 
 # === CONFIGURATION ===
-SERIAL_PORT = "/dev/cu.usbmodem2101"  # Update as needed
+SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
 BAUD_RATE = 9600
 SONG_LENGTH_SECONDS = 200
 
@@ -49,7 +49,7 @@ try:
         message = f"T:{elapsed_ms}\n"
         ser.write(message.encode())
         print(f"[Host →] Sending: {message.strip()}")
-        time.sleep(1)
+        time.sleep(5)
 
         if elapsed_sec > SONG_LENGTH_SECONDS + 5:
             print("Done syncing. Closing serial.")
