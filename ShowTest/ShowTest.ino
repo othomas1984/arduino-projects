@@ -254,6 +254,68 @@ public:
   }
 };
 
+// ----- SegmentRainbowChaseAnimation with bpm100 -----
+
+class SegmentRainbowChaseAnimation : public Animation {
+public:
+  const char* pattern;
+  uint16_t bpm100;
+  unsigned long totalDuration;
+  uint8_t spacing = 3;
+  bool isReversed;
+  CRGBPalette16 palette;
+  uint8_t brightnessPercent = 100;
+
+  SegmentRainbowChaseAnimation(const char* pattern, uint16_t bpm100, bool isReversed = false)
+    : pattern(pattern), bpm100(bpm100), isReversed(isReversed), totalDuration(0) {
+    palette = RainbowColors_p;
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+      totalDuration += getNoteDuration(c, bpm100);
+    }
+  }
+
+  void apply(unsigned long time) override {
+    if (totalDuration == 0 || segmentCount == 0) return;
+
+    unsigned long t = time % totalDuration;
+    unsigned long elapsed = 0;
+    uint16_t beatIndex = 0;
+
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+
+      unsigned long duration = getNoteDuration(c, bpm100);
+      bool isRest = (c >= 'a' && c <= 'z');
+
+      if (t < elapsed + duration) {
+        for (uint8_t j = 0; j < segmentCount; j++) {
+          const SegmentConfig& segCfg = segments[j];
+          Segment* seg = segCfg.segment;
+
+          uint8_t segIndex = isReversed ? (segmentCount - 1 - j) : j;
+
+          CRGB output = CRGB::Black;
+          if (!isRest && ((segIndex + beatIndex) % spacing == 0)) {
+            // Color scrolls forward with beatIndex
+            uint8_t colorIndex = ((segIndex + beatIndex) * 32) % 255;
+            output = ColorFromPalette(palette, colorIndex);
+            output.nscale8_video((brightnessPercent * segCfg.brightnessPercent) / 100);
+          }
+
+          seg->setColor(output);
+        }
+        break;
+      }
+
+      elapsed += duration;
+      if (!isRest) beatIndex++;
+    }
+  }
+};
+
 // ----- TheatreChaseBeatAnimation with bpm100 -----
 
 class TheatreChaseBeatAnimation : public Animation {
@@ -320,6 +382,73 @@ public:
   }
 };
 
+// ----- TheatreChasePaletteBeatAnimation with bpm100 -----
+
+class TheatreChasePaletteBeatAnimation : public Animation {
+public:
+  const char* pattern;
+  uint16_t bpm100;
+  unsigned long totalDuration;
+  uint8_t brightnessPercent = 100;
+  uint8_t spacing = 3;
+  bool isReversed;
+  CRGBPalette16 palette;
+
+  TheatreChasePaletteBeatAnimation(const char* pattern, uint16_t bpm100, bool isReversed = false)
+    : pattern(pattern), bpm100(bpm100), isReversed(isReversed), totalDuration(0) {
+    palette = RainbowColors_p; // Or change to a custom palette
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+      totalDuration += getNoteDuration(c, bpm100);
+    }
+  }
+
+  void apply(unsigned long time) override {
+    if (totalDuration == 0) return;
+    unsigned long t = time % totalDuration;
+    unsigned long elapsed = 0;
+    uint16_t beatIndex = 0;
+
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+      bool isRest = (c >= 'a' && c <= 'z');
+
+      unsigned long duration = getNoteDuration(c, bpm100);
+      if (t < elapsed + duration) {
+        for (uint8_t j = 0; j < segmentCount; j++) {
+          const SegmentConfig& segCfg = segments[j];
+          Segment* seg = segCfg.segment;
+
+          for (uint8_t k = 0; k < seg->ledCount; k++) {
+            CRGB output = CRGB::Black;
+
+            if (!isRest) {
+              uint8_t ledIndex = isReversed ? k : (seg->ledCount - 1 - k);
+
+              if ((ledIndex + beatIndex) % spacing == 0) {
+                // Use palette instead of flat color
+                uint8_t colorIndex = ((ledIndex + beatIndex) * 16) % 255;
+                output = ColorFromPalette(palette, colorIndex);
+                output.nscale8_video((brightnessPercent * segCfg.brightnessPercent) / 100);
+              }
+            }
+
+            seg->leds[k].strip[seg->leds[k].index] = output;
+          }
+        }
+
+        break;
+      }
+
+      elapsed += duration;
+      if (!isRest) {
+        beatIndex++;  // Advance the chase only on notes
+      }
+    }
+  }
+};
 
 // ----- Cue and Show -----
 
@@ -497,15 +626,6 @@ void initTestShow() {
   testShow.addCue(cue1);
   Serial.println("Init: Cue1");
 
-  Cue* cueIntro = new Cue(&scene, 2000, bpm);
-  auto piano1Intro = new PatternBeatAnimation("| Ee Ee Ee Ee | Ee Ee ee SsSs | Ee Ee Ee Ee | Ee Ee q q |", bpm, CRGB::Blue);
-  auto piano2Intro = new PatternBeatAnimation("| eE eE eE eE | eE eE ee sSsS | eE eE eE eE | eE ee q q |", bpm, CRGB::Blue);
-  piano1Intro->addSegment(piano1Segment, 100);
-  piano2Intro->addSegment(piano2Segment, 100);
-  cueIntro->addAnimation(piano1Intro);
-  cueIntro->addAnimation(piano2Intro);
-  testShow.addCue(cueIntro);
-
   Cue* cue1point5 = new Cue(&scene1, 4000, bpm);
   auto halfNotesChase = new TheatreChaseBeatAnimation("| SSS |", bpm, CRGB::DarkOrange, false);
   halfNotesChase->addSegment(scene1Segment2, 50);
@@ -519,9 +639,13 @@ void initTestShow() {
   Serial.println("Init: Cue2");
 
   Cue* cue1point7 = new Cue(&scene1, 4000, bpm);
-  auto halfNotesReverseChase = new TheatreChaseBeatAnimation("| SSS |", bpm, CRGB::Purple, true);
-  halfNotesReverseChase->addSegment(scene1Segment2, 50);
-  cue1point7->addAnimation(halfNotesReverseChase);
+  auto halfNotesReverseRainbowChase = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, true);
+  halfNotesReverseRainbowChase->addSegment(scene1Segment2, 50);
+  halfNotesReverseRainbowChase->addSegment(scene1Segment3, 50);
+  halfNotesReverseRainbowChase->addSegment(scene1Segment4, 50);
+  halfNotesReverseRainbowChase->addSegment(scene1Segment5, 50);
+  halfNotesReverseRainbowChase->addSegment(scene1Segment6, 50);
+  cue1point7->addAnimation(halfNotesReverseRainbowChase);
   testShow.addCue(cue1point7);
 
   Cue* cue1point8 = new Cue(&scene1, 4000, bpm);
