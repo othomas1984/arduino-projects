@@ -195,6 +195,71 @@ public:
   }
 };
 
+// ----- TheatreChaseBeatAnimation with bpm100 -----
+
+class TheatreChaseBeatAnimation : public Animation {
+public:
+  const char* pattern;
+  CRGB color;
+  uint16_t bpm100;
+  unsigned long totalDuration;
+  uint8_t brightnessPercent = 100;
+  bool isReversed;
+  uint8_t spacing = 3;
+
+  TheatreChaseBeatAnimation(const char* pattern, uint16_t bpm100, CRGB color, bool isReversed = false)
+    : pattern(pattern), bpm100(bpm100), color(color), totalDuration(0), isReversed(isReversed) {
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+      totalDuration += getNoteDuration(c, bpm100);
+    }
+  }
+
+  void apply(unsigned long time) override {
+    if (totalDuration == 0) return;
+    unsigned long t = time % totalDuration;
+    unsigned long elapsed = 0;
+    uint16_t beatIndex = 0;
+
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+
+      unsigned long duration = getNoteDuration(c, bpm100);
+      if (t < elapsed + duration) {
+        bool isRest = (c >= 'a' && c <= 'z');
+
+        for (uint8_t j = 0; j < segmentCount; j++) {
+          const SegmentConfig& segCfg = segments[j];
+          Segment* seg = segCfg.segment;
+
+          for (uint8_t k = 0; k < seg->ledCount; k++) {
+            CRGB output = CRGB::Black;
+
+            if (!isRest) {
+              uint8_t ledIndex = isReversed ? (seg->ledCount - 1 - k) : k;
+
+              if ((ledIndex + beatIndex) % spacing == 0) {
+                output = color;
+                output.nscale8_video((brightnessPercent * segCfg.brightnessPercent) / 100);
+              }
+            }
+
+            seg->leds[k].strip[seg->leds[k].index] = output;
+          }
+        }
+
+        break;
+      }
+
+      elapsed += duration;
+      beatIndex++;
+    }
+  }
+};
+
+
 // ----- Cue and Show -----
 
 class Cue {
@@ -356,7 +421,7 @@ void initLoseYourselfShow() {
 void initTestShow() {
   uint16_t bpm = 12000;
 
-  Cue* cue1 = new Cue(&scene1, 10000, bpm);
+  Cue* cue1 = new Cue(&scene1, 4000, bpm);
   auto wholeNotes = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
   wholeNotes->addSegment(scene1Segment1, 50);
   cue1->addAnimation(wholeNotes);
@@ -372,6 +437,18 @@ void initTestShow() {
   cueIntro->addAnimation(piano2Intro);
   testShow.addCue(cueIntro);
 
+  Cue* cue1point5 = new Cue(&scene1, 10000, bpm);
+  auto halfNotesChase = new TheatreChaseBeatAnimation("| SSS |", bpm, CRGB::DarkOrange);
+  halfNotesChase->addSegment(scene1Segment2, 50);
+  halfNotesChase->addSegment(scene1Segment3, 50);
+  halfNotesChase->addSegment(scene1Segment4, 50);
+  halfNotesChase->addSegment(scene1Segment5, 50);
+  halfNotesChase->addSegment(scene1Segment6, 50);
+  cue1point5->addAnimation(wholeNotes);
+  cue1point5->addAnimation(halfNotesChase);
+  testShow.addCue(cue1point5);
+  Serial.println("Init: Cue2");
+
   Cue* cue2 = new Cue(&scene1, 10000, bpm);
   auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::DarkOrange);
   halfNotes->addSegment(scene1Segment2, 50);
@@ -379,6 +456,7 @@ void initTestShow() {
   cue2->addAnimation(halfNotes);
   testShow.addCue(cue2);
   Serial.println("Init: Cue2");
+
 
   Cue* cue3 = new Cue(&scene1, 10000, bpm);
   auto quarterNotes = new PatternBeatAnimation("| Q q Q q |", bpm, CRGB::Yellow);
@@ -436,7 +514,8 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Setup");
   FastLED.addLeds<WS2812B, 21, RGB>(strip1, STRIP1_LEDS);
-  FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);  FastLED.setBrightness(51); // ~20%
+  FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);
+  FastLED.setBrightness(51); // ~20%
   initSegments();
   Serial.println("Init: Segments");
   initScene1Segments();
