@@ -225,10 +225,10 @@ public:
     for (uint16_t i = 0; pattern[i]; i++) {
       char c = pattern[i];
       if (c == '|' || c == ' ') continue;
+      bool isRest = (c >= 'a' && c <= 'z');
 
       unsigned long duration = getNoteDuration(c, bpm100);
       if (t < elapsed + duration) {
-        bool isRest = (c >= 'a' && c <= 'z');
 
         for (uint8_t j = 0; j < segmentCount; j++) {
           const SegmentConfig& segCfg = segments[j];
@@ -238,7 +238,7 @@ public:
             CRGB output = CRGB::Black;
 
             if (!isRest) {
-              uint8_t ledIndex = isReversed ? (seg->ledCount - 1 - k) : k;
+              uint8_t ledIndex = isReversed ? k : (seg->ledCount - 1 - k);
 
               if ((ledIndex + beatIndex) % spacing == 0) {
                 output = color;
@@ -254,7 +254,9 @@ public:
       }
 
       elapsed += duration;
-      beatIndex++;
+      if (!isRest) {
+        beatIndex++;  // Only advance the chase for actual beats
+      }
     }
   }
 };
@@ -421,8 +423,8 @@ void initLoseYourselfShow() {
 void initTestShow() {
   uint16_t bpm = 12000;
 
-  Cue* cue1 = new Cue(&scene1, 4000, bpm);
-  auto wholeNotes = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
+  Cue* cue1 = new Cue(&scene1, 2000, bpm);
+  auto wholeNotes = new PatternBeatAnimation("| H | h |", bpm, CRGB::Red);
   wholeNotes->addSegment(scene1Segment1, 50);
   cue1->addAnimation(wholeNotes);
   testShow.addCue(cue1);
@@ -438,7 +440,7 @@ void initTestShow() {
   testShow.addCue(cueIntro);
 
   Cue* cue1point5 = new Cue(&scene1, 10000, bpm);
-  auto halfNotesChase = new TheatreChaseBeatAnimation("| SSS |", bpm, CRGB::DarkOrange);
+  auto halfNotesChase = new TheatreChaseBeatAnimation("| SSS |", bpm, CRGB::DarkOrange, true);
   halfNotesChase->addSegment(scene1Segment2, 50);
   halfNotesChase->addSegment(scene1Segment3, 50);
   halfNotesChase->addSegment(scene1Segment4, 50);
@@ -448,6 +450,12 @@ void initTestShow() {
   cue1point5->addAnimation(halfNotesChase);
   testShow.addCue(cue1point5);
   Serial.println("Init: Cue2");
+
+  Cue* cue1point7 = new Cue(&scene1, 10000, bpm);
+  auto halfNotesReverseChase = new TheatreChaseBeatAnimation("| SSS |", bpm, CRGB::Purple, false);
+  halfNotesReverseChase->addSegment(scene1Segment2, 50);
+  cue1point7->addAnimation(halfNotesReverseChase);
+  testShow.addCue(cue1point7);
 
   Cue* cue2 = new Cue(&scene1, 10000, bpm);
   auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::DarkOrange);
