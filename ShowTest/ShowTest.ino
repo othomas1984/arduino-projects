@@ -149,6 +149,7 @@ uint16_t getNoteDuration(char symbol, uint16_t bpm100) {
     case 'E': case 'e': return beat / 2;
     case 'S': case 's': return beat / 4;
     case 'T': case 't': return beat / 8;
+    case 'F': case 'f': return beat / 16;
     default: return 0;
   }
 }
@@ -637,11 +638,17 @@ void initLoseYourselfShow() {
 void initTestShow() {
   uint16_t bpm = 12000;
 
-  Cue* cue1 = new Cue(&scene1, 2000, bpm);
-  auto wholeNotes = new PatternBeatAnimation("| W | w |", bpm, CRGB::Red);
-  wholeNotes->addSegment(scene1Segment1, 50);
-  cue1->addAnimation(wholeNotes);
-  testShow.addCue(cue1);
+  Cue* introCue = new Cue(&scene1, 4000, bpm);
+  auto intro = new PatternBeatAnimation("| H | h |", bpm, CRGB::Red);
+  intro->addSegment(scene1Segment1, 50);
+  intro->addSegment(scene1Segment2, 50);
+  intro->addSegment(scene1Segment3, 50);
+  intro->addSegment(scene1Segment4, 50);
+  intro->addSegment(scene1Segment5, 50);
+  intro->addSegment(scene1Segment6, 50);
+  intro->addSegment(scene1Segment7, 50);
+  introCue->addAnimation(intro);
+  testShow.addCue(introCue);
   Serial.println("Init: Cue1");
 
   Cue* cue1point5 = new Cue(&scene1, 4000, bpm);
@@ -651,7 +658,7 @@ void initTestShow() {
   halfNotesChase->addSegment(scene1Segment4, 50);
   halfNotesChase->addSegment(scene1Segment5, 50);
   halfNotesChase->addSegment(scene1Segment6, 50);
-  cue1point5->addAnimation(wholeNotes);
+  halfNotesChase->addSegment(scene1Segment7, 50);
   cue1point5->addAnimation(halfNotesChase);
   testShow.addCue(cue1point5);
   Serial.println("Init: Cue2");
@@ -664,6 +671,7 @@ void initTestShow() {
   halfNotesReverseFireChase->addSegment(scene1Segment4, 50);
   halfNotesReverseFireChase->addSegment(scene1Segment5, 50);
   halfNotesReverseFireChase->addSegment(scene1Segment6, 50);
+  halfNotesReverseFireChase->addSegment(scene1Segment7, 50);
   cue1point7->addAnimation(halfNotesReverseFireChase);
   testShow.addCue(cue1point7);
   
@@ -674,33 +682,43 @@ void initTestShow() {
   halfNotesReverseRainbowChase->addSegment(scene1Segment4, 50);
   halfNotesReverseRainbowChase->addSegment(scene1Segment5, 50);
   halfNotesReverseRainbowChase->addSegment(scene1Segment6, 50);
+  halfNotesReverseRainbowChase->addSegment(scene1Segment7, 50);
   cue1point75->addAnimation(halfNotesReverseRainbowChase);
   testShow.addCue(cue1point75);
 
   Cue* cue1point8 = new Cue(&scene1, 4000, bpm);
   auto segmentChase = new SegmentTheatreChaseBeatAnimation("| SSS |", bpm, CRGB::Blue);
-  segmentChase->addSegment(scene1Segment3, 50);
+  segmentChase->addSegment(scene1Segment1, 50);
   segmentChase->addSegment(scene1Segment2, 50);
+  segmentChase->addSegment(scene1Segment3, 50);
+  segmentChase->addSegment(scene1Segment4, 50);
+  segmentChase->addSegment(scene1Segment5, 50);
   segmentChase->addSegment(scene1Segment6, 50);
   segmentChase->addSegment(scene1Segment7, 50);
-  segmentChase->addSegment(scene1Segment5, 50);
-  segmentChase->addSegment(scene1Segment4, 50);
   cue1point8->addAnimation(segmentChase);
   testShow.addCue(cue1point8);
 
   Cue* cue1point9 = new Cue(&scene1, 4000, bpm);
   auto segmentChase2 = new SegmentRainbowChaseAnimation("| SSS |", bpm, RainbowColors_p, true);
-  segmentChase2->addSegment(scene1Segment3, 50);
+  segmentChase2->addSegment(scene1Segment1, 50);
   segmentChase2->addSegment(scene1Segment2, 50);
+  segmentChase2->addSegment(scene1Segment3, 50);
+  segmentChase2->addSegment(scene1Segment4, 50);
+  segmentChase2->addSegment(scene1Segment5, 50);
   segmentChase2->addSegment(scene1Segment6, 50);
   segmentChase2->addSegment(scene1Segment7, 50);
-  segmentChase2->addSegment(scene1Segment5, 50);
-  segmentChase2->addSegment(scene1Segment4, 50);
   cue1point9->addAnimation(segmentChase2);
   testShow.addCue(cue1point9);
 
-  Cue* cue2 = new Cue(&scene1, 10000, bpm);
-  auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::DarkOrange);
+  Cue* cue1 = new Cue(&scene1, 4000, bpm);
+  auto wholeNotes = new PatternBeatAnimation("| W | W |", bpm, CRGB::Red);
+  wholeNotes->addSegment(scene1Segment1, 50);
+  cue1->addAnimation(wholeNotes);
+  testShow.addCue(cue1);
+  Serial.println("Init: Cue1");
+
+  Cue* cue2 = new Cue(&scene1, 4000, bpm);
+  auto halfNotes = new PatternBeatAnimation("| H h |", bpm, CRGB::Red);
   halfNotes->addSegment(scene1Segment2, 50);
   cue2->addAnimation(wholeNotes);
   cue2->addAnimation(halfNotes);
@@ -708,8 +726,8 @@ void initTestShow() {
   Serial.println("Init: Cue2");
 
 
-  Cue* cue3 = new Cue(&scene1, 10000, bpm);
-  auto quarterNotes = new PatternBeatAnimation("| Q q Q q |", bpm, CRGB::Yellow);
+  Cue* cue3 = new Cue(&scene1, 4000, bpm);
+  auto quarterNotes = new PatternBeatAnimation("| Q q Q q |", bpm, CRGB::DarkOrange);
   quarterNotes->addSegment(scene1Segment3, 50);
   cue3->addAnimation(wholeNotes);
   cue3->addAnimation(halfNotes);
@@ -717,8 +735,8 @@ void initTestShow() {
   testShow.addCue(cue3);
   Serial.println("Init: Cue2");
 
-  Cue* cue4 = new Cue(&scene1, 10000, bpm);
-  auto eigthNotes = new PatternBeatAnimation("| Ee Ee Ee Ee |", bpm, CRGB::Green);
+  Cue* cue4 = new Cue(&scene1, 4000, bpm);
+  auto eigthNotes = new PatternBeatAnimation("| Ee Ee Ee Ee |", bpm, CRGB::Yellow);
   eigthNotes->addSegment(scene1Segment4, 50);
   cue4->addAnimation(wholeNotes);
   cue4->addAnimation(halfNotes);
@@ -727,8 +745,8 @@ void initTestShow() {
   testShow.addCue(cue4);
   Serial.println("Init: Cue2");
 
-  Cue* cue5 = new Cue(&scene1, 10000, bpm);
-  auto sixteenthNotes = new PatternBeatAnimation("| SsSs SsSs SsSs SsSs |", bpm, CRGB::Blue);
+  Cue* cue5 = new Cue(&scene1, 4000, bpm);
+  auto sixteenthNotes = new PatternBeatAnimation("| SsSs SsSs SsSs SsSs |", bpm, CRGB::Green);
   sixteenthNotes->addSegment(scene1Segment5, 50);
   cue5->addAnimation(wholeNotes);
   cue5->addAnimation(halfNotes);
@@ -738,8 +756,8 @@ void initTestShow() {
   testShow.addCue(cue5);
   Serial.println("Init: Cue2");
 
-  Cue* cue6 = new Cue(&scene1, 10000, bpm);
-  auto thirtysecondNotes = new PatternBeatAnimation("| TtTtTtTt TtTtTtTt TtTtTtTt TtTtTtTt |", bpm, CRGB::Purple);
+  Cue* cue6 = new Cue(&scene1, 4000, bpm);
+  auto thirtysecondNotes = new PatternBeatAnimation("| TtTtTtTt TtTtTtTt TtTtTtTt TtTtTtTt |", bpm, CRGB::Blue);
   thirtysecondNotes->addSegment(scene1Segment6, 50);
   cue6->addAnimation(wholeNotes);
   cue6->addAnimation(halfNotes);
@@ -749,6 +767,19 @@ void initTestShow() {
   cue6->addAnimation(thirtysecondNotes);
   testShow.addCue(cue6);
   Serial.println("Init: Cue2");
+  
+  Cue* cue7 = new Cue(&scene1, 4000, bpm);
+  auto sixtyFourthNotes = new PatternBeatAnimation("| FfFfFfFfFfFfFfFf FfFfFfFfFfFfFfFf FfFfFfFfFfFfFfFf FfFfFfFfFfFfFfFf |", bpm, CRGB::Purple);
+  sixtyFourthNotes->addSegment(scene1Segment7, 50);
+  cue7->addAnimation(wholeNotes);
+  cue7->addAnimation(halfNotes);
+  cue7->addAnimation(quarterNotes);
+  cue7->addAnimation(eigthNotes);
+  cue7->addAnimation(sixteenthNotes);
+  cue7->addAnimation(thirtysecondNotes);
+  cue7->addAnimation(sixtyFourthNotes);
+  testShow.addCue(cue7);
+  Serial.println("Init: Cue2");
 
   for (int i = 0; i < 9; i++) {
     testShow.addCue(cue1);
@@ -757,6 +788,7 @@ void initTestShow() {
     testShow.addCue(cue4);
     testShow.addCue(cue5);
     testShow.addCue(cue6);
+    testShow.addCue(cue7);
   }
 }
 
