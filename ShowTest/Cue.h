@@ -17,6 +17,9 @@ public:
   Cue(Scene* scene, unsigned long duration, uint16_t bpm100)
     : scene(scene), duration(duration), bpm100(bpm100), animationCount(0) {}
 
+  Cue(Scene* scene, double beats, uint16_t bpm100)
+    : scene(scene), duration((unsigned long)((beats * 60000.0 * 100.0) / (double)bpm100)), bpm100(bpm100), animationCount(0) {}
+
   void addAnimation(Animation* animation) {
     if (animationCount < MAX_ANIMATIONS_PER_SCENE) {
       animations[animationCount++] = animation;
