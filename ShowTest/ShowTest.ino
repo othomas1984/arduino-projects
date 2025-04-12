@@ -1,6 +1,6 @@
 #include <FastLED.h>
 
-#define STRIP1_LEDS 161
+#define STRIP1_LEDS 248
 #define STRIP2_LEDS 29
 
 CRGB strip1[STRIP1_LEDS];
@@ -390,10 +390,17 @@ public:
 
 // ----- Show Definition: "Lose Yourself" -----
 
-Scene scene, scene1;
+Scene scene, scene1, scene2;
 Segment *piano1Segment, *piano2Segment, *drumSegment, *baseSegment, *stringSegment;
 Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *scene1Segment5, *scene1Segment6, *scene1Segment7;
-Show loseYourselfShow, testShow;
+Segment *scene2Segment1;
+Show loseYourselfShow, testShow, ambianceShow;
+
+void initScene2Segments() {
+  const uint16_t leds1[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247};
+  StripLEDConfig leds1Cfg[] = {{1, leds1, 248}};
+  scene2Segment1 = scene2.createSegment(leds1Cfg, 1);
+}
 
 void initScene1Segments() {
   const uint16_t leds1[] = {0,1};
@@ -441,6 +448,20 @@ void initSegments() {
   const uint16_t baseLEDs1[] = {50,51,52,53,54,55};
   StripLEDConfig baseCfg[] = {{1, baseLEDs1, 6}};
   baseSegment = scene.createSegment(baseCfg, 1);
+}
+
+void initAmbianceShow() {
+  uint16_t bpm = 6000;
+
+  Cue* introCue = new Cue(&scene2, 600000, bpm);
+  // auto intro = new PatternBeatAnimation("| W |", bpm, CRGB::Wheat);
+  auto intro = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, RainbowColors_p, false);
+  intro->addSegment(scene2Segment1, 50);
+  introCue->addAnimation(intro);
+  ambianceShow.addCue(introCue);
+  Serial.println("Init: Cue1");
+
+  ambianceShow.repeats = true;
 }
 
 void initLoseYourselfShow() {
@@ -665,8 +686,11 @@ void setup() {
   Serial.println("Init: Segments");
   initScene1Segments();
   Serial.println("Init: Scene1Segments");
+  initScene2Segments();
+  Serial.println("Init: Scene1Segments");
   initLoseYourselfShow();
   initTestShow();
+  initAmbianceShow();
   Serial.println("Init: TestShow");
   Serial.println("Ready. Send 's' to start the show or 'T:<ms>' to sync.");
 }
@@ -735,6 +759,7 @@ void loop() {
     unsigned long elapsedMillis = millis() - showStartMillis;
     // loseYourselfShow.update(elapsedMillis);
     testShow.update(elapsedMillis);
+    // ambianceShow.update(elapsedMillis);
 
     if (millis() - lastLogMillis >= 1000) {
       lastLogMillis += 1000;
