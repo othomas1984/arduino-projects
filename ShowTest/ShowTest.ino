@@ -677,6 +677,8 @@ void initTestShow() {
   }
 }
 
+Show activeShow;
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Setup");
@@ -694,6 +696,8 @@ void setup() {
   initAmbianceShow();
   Serial.println("Init: TestShow");
   Serial.println("Ready. Send 's' to start the show or 'T:<ms>' to sync.");
+
+  activeShow = loseYourselfShow;
 }
 
 bool parsePrefixedInt(const char* input, const char* prefix, uint32_t& outValue) {
@@ -753,14 +757,38 @@ void loop() {
         strip1[i] = CRGB::Black;
       }
       Serial.println("Show stopped!");
+    } else if (len > 5 && strncmp(serialBuffer, "SHOW:", 5) == 0) {
+      uint32_t showIndex;
+      parsePrefixedInt(serialBuffer, "SHOW:", showIndex);
+      Serial.print("Parsed Show: ");
+      Serial.println(showIndex);
+      switch (showIndex) {
+        case 1:
+          activeShow = loseYourselfShow;
+          break;
+        case 2:
+          activeShow = testShow;
+          break;
+        case 3:
+          activeShow = ambianceShow;
+          break;
+        default:
+          Serial.println("[Serial] Ignored: Invalid SHOW:[1-3] format");
+          break;
+      }
+      showStartMillis = millis();
+      lastLogMillis = millis();
+      showStarted = true;
+      for (uint8_t i = 0; i < STRIP1_LEDS; i++) {
+        strip1[i] = CRGB::Black;
+      }
+      Serial.println("Show started!");
     }
   }
 
   if (showStarted) {
     unsigned long elapsedMillis = millis() - showStartMillis;
-    // loseYourselfShow.update(elapsedMillis);
-    testShow.update(elapsedMillis);
-    // ambianceShow.update(elapsedMillis);
+    activeShow.update(elapsedMillis);
 
     if (millis() - lastLogMillis >= 1000) {
       lastLogMillis += 1000;
