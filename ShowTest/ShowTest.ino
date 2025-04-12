@@ -2,15 +2,12 @@
 
 #define STRIP1_LEDS 161
 #define STRIP2_LEDS 29
-#define MAX_LEDS_PER_SEGMENT 64
-#define MAX_SEGMENTS_PER_SCENE 8
-#define MAX_SEGMENTS_PER_ANIMATION 8
-#define MAX_ANIMATIONS_PER_SCENE 8
-#define MAX_CUES_PER_SHOW 32
 
 CRGB strip1[STRIP1_LEDS];
 CRGB strip2[STRIP2_LEDS];
 CRGB* strips[] = {strip1, strip2};
+
+#include <Show.h>
 
 // ----- Serial Sync Flag -----
 bool showStarted = false;
@@ -58,85 +55,6 @@ void syncToSerialTime(uint32_t reportedMillis) {
   Serial.print(drift);
   Serial.println(" ms");
 }
-
-// ----- Core Structures -----
-
-struct LEDPointer {
-  CRGB* strip;
-  uint16_t index;
-};
-
-struct StripLEDConfig {
-  uint8_t stripNumber;
-  const uint16_t* indexes;
-  uint8_t count;
-};
-
-class Segment {
-public:
-  LEDPointer leds[MAX_LEDS_PER_SEGMENT];
-  uint8_t ledCount;
-
-  Segment() : ledCount(0) {}
-
-  void addLED(CRGB* strip, uint16_t index) {
-    if (ledCount < MAX_LEDS_PER_SEGMENT) {
-      leds[ledCount++] = {strip, index};
-    }
-  }
-
-  void setColor(CRGB color) {
-    for (uint8_t i = 0; i < ledCount; i++) {
-      leds[i].strip[leds[i].index] = color;
-    }
-  }
-};
-
-class Scene {
-public:
-  Segment* segments[MAX_SEGMENTS_PER_SCENE];
-  uint8_t segmentCount;
-
-  Scene() : segmentCount(0) {}
-
-  Segment* createSegment(const StripLEDConfig* configs, uint8_t configCount) {
-    if (segmentCount >= MAX_SEGMENTS_PER_SCENE) return nullptr;
-    Segment* segment = new Segment();
-    for (uint8_t i = 0; i < configCount; i++) {
-      const StripLEDConfig& cfg = configs[i];
-      CRGB* strip = strips[cfg.stripNumber - 1];
-      for (uint8_t j = 0; j < cfg.count; j++) {
-        segment->addLED(strip, cfg.indexes[j]);
-      }
-    }
-    segments[segmentCount++] = segment;
-    return segment;
-  }
-};
-
-// ----- Animation Base Class -----
-
-struct SegmentConfig {
-  Segment* segment;
-  uint8_t brightnessPercent;
-};
-
-class Animation {
-protected:
-  SegmentConfig segments[MAX_SEGMENTS_PER_ANIMATION];
-  uint8_t segmentCount = 0;
-
-public:
-  virtual ~Animation() {}
-
-  void addSegment(Segment* s, uint8_t brightness = 100) {
-    if (segmentCount < MAX_SEGMENTS_PER_ANIMATION) {
-      segments[segmentCount++] = {s, brightness};
-    }
-  }
-
-  virtual void apply(unsigned long time) = 0;
-};
 
 // ----- Note Duration with bpm100 -----
 
@@ -469,61 +387,6 @@ public:
   }
 };
 
-// ----- Cue and Show -----
-
-class Cue {
-public:
-  Scene* scene;
-  unsigned long duration;
-  uint16_t bpm100;
-  Animation* animations[MAX_ANIMATIONS_PER_SCENE];
-  uint8_t animationCount;
-
-  Cue(Scene* scene, unsigned long duration, uint16_t bpm100)
-    : scene(scene), duration(duration), bpm100(bpm100), animationCount(0) {}
-
-  void addAnimation(Animation* animation) {
-    if (animationCount < MAX_ANIMATIONS_PER_SCENE) {
-      animations[animationCount++] = animation;
-    }
-  }
-
-  void update(unsigned long t) {
-    for (uint8_t i = 0; i < animationCount; i++) {
-      animations[i]->apply(t);
-    }
-  }
-};
-
-class Show {
-public:
-  Cue* cues[MAX_CUES_PER_SHOW];
-  uint8_t cueCount;
-
-  Show() : cueCount(0) {}
-
-  void addCue(Cue* cue) {
-    if (cueCount < MAX_CUES_PER_SHOW) {
-      cues[cueCount++] = cue;
-    }
-  }
-
-  void update(unsigned long time) {
-    unsigned long offset = 0;
-
-    // Always clear all LEDs before cue update
-    for (int i = 0; i < STRIP1_LEDS; i++) strip1[i] = CRGB::Black;
-    for (int i = 0; i < STRIP2_LEDS; i++) strip2[i] = CRGB::Black;
-
-    for (uint8_t i = 0; i < cueCount; i++) {
-      if (time < offset + cues[i]->duration) {
-        cues[i]->update(time - offset);
-        return;
-      }
-      offset += cues[i]->duration;
-    }
-  }
-};
 
 // ----- Show Definition: "Lose Yourself" -----
 
