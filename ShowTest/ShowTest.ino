@@ -254,10 +254,10 @@ public:
   unsigned long totalDuration;
   uint8_t brightnessPercent = 100;
   bool isReversed;
-  uint8_t spacing = 3;
+  uint8_t spacing;
 
-  TheatreChaseBeatAnimation(const char* pattern, uint16_t bpm100, CRGB color, bool isReversed = false)
-    : pattern(pattern), bpm100(bpm100), color(color), totalDuration(0), isReversed(isReversed) {
+  TheatreChaseBeatAnimation(const char* pattern, uint16_t bpm100, CRGB color, uint8_t spacing, bool isReversed = false)
+    : pattern(pattern), spacing(spacing), bpm100(bpm100), color(color), totalDuration(0), isReversed(isReversed) {
     for (uint16_t i = 0; pattern[i]; i++) {
       char c = pattern[i];
       if (c == '|' || c == ' ') continue;
