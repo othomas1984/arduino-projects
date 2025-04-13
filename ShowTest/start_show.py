@@ -76,9 +76,7 @@ def read_input_custom():
                             track_uri = "spotify:track:596KUmMbTifuYdDC14lQdD"
                             subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
                             start_time = time.time()
-                            subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])
-                        else:
-                            subprocess.run(["osascript", "-e", 'tell application \"Spotify\" to pause'])
+                            subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])                            
                     input_buffer = ""
                     redraw_console()
                 elif c == '\x7f':  # Backspace

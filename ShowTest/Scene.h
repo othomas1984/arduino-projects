@@ -3,7 +3,7 @@
 
 #include <Segment.h>
 
-#define MAX_SEGMENTS_PER_SCENE 8
+#define MAX_SEGMENTS_PER_SCENE 16
 
 struct StripLEDConfig {
   uint8_t stripNumber;
