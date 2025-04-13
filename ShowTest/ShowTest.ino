@@ -516,6 +516,22 @@ void initAmbianceShow() {
   ambianceShow.repeats = true;
 }
 
+void initWeAreYourFriendsShow() {
+  uint16_t bpm = 12293;
+
+  Cue* silence = new Cue(&scene, 1220UL, bpm);
+  weAreYourFriendsShow.addCue(silence);
+
+  Cue* introCue = new Cue(&scene2, 600.0, bpm);
+  // auto intro = new PatternBeatAnimation("| W |", bpm, CRGB::Wheat);
+  auto intro = new TheatreChasePaletteBeatAnimation("| QQQQQQQQQQQQQQQQQQ |", bpm, RainbowColors_p, false);
+  intro->addSegment(scene2Segment1, 50);
+  introCue->addAnimation(intro);
+  weAreYourFriendsShow.addCue(introCue);
+  Serial.println("Init: Cue1");
+
+  weAreYourFriendsShow.repeats = true;
+}
 
 void initLoseYourselfShow() {
   uint16_t bpmIntro = 6593;
@@ -754,6 +770,8 @@ void setup() {
   initLoseYourselfShow();
   initTestShow();
   initAmbianceShow();
+
+  initWeAreYourFriendsShow();
   Serial.println("Init: TestShow");
   Serial.println("Ready. Send 's' to start the show or 'T:<ms>' to sync.");
 
@@ -831,6 +849,9 @@ void loop() {
           break;
         case 3:
           activeShow = ambianceShow;
+          break;
+        case 4:
+          activeShow = weAreYourFriendsShow;
           break;
         default:
           Serial.println("[Serial] Ignored: Invalid SHOW:[1-3] format");
