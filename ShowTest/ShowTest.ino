@@ -390,11 +390,63 @@ public:
 
 // ----- Show Definition: "Lose Yourself" -----
 
-Scene scene, scene1, scene2;
+Scene scene, scene1, scene2, scene3;
 Segment *piano1Segment, *piano2Segment, *drumSegment, *baseSegment, *stringSegment;
 Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *scene1Segment5, *scene1Segment6, *scene1Segment7;
 Segment *scene2Segment1;
-Show loseYourselfShow, testShow, ambianceShow;
+Segment *MDSegment, *MCSegment, *LASegment, *SBSegment, *SASegment, *TESegment, *TDSegment, *TCSegment, *TBSegment, *TASegment, *LBSegment, *MASegment, *SCSegment, *SDSegment, *MBSegment, *TFSegment;
+Show loseYourselfShow, testShow, ambianceShow, weAreYourFriendsShow;
+
+void initStripSegments() {
+  const uint16_t ledsMD[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28};
+  StripLEDConfig ledsMDCfg[] = {{1, ledsMD, sizeof(ledsMD) / sizeof(ledsMD[0])}};
+  MDSegment = scene3.createSegment(ledsMDCfg, 1);
+  const uint16_t ledsMC[] = {29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57};
+  StripLEDConfig ledsMCCfg[] = {{1, ledsMC, sizeof(ledsMC) / sizeof(ledsMC[0])}};
+  MCSegment = scene3.createSegment(ledsMCCfg, 1);
+  const uint16_t ledsLA[] = {58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93};
+  StripLEDConfig ledsLACfg[] = {{1, ledsLA, sizeof(ledsLA) / sizeof(ledsLA[0])}};
+  LASegment = scene3.createSegment(ledsLACfg, 1);
+  const uint16_t ledsSB[] = {107,106,105,104,103,102,101,100,99,98,97,96,95,94};
+  StripLEDConfig ledsSBCfg[] = {{1, ledsSB, sizeof(ledsSB) / sizeof(ledsSB[0])}};
+  SBSegment = scene3.createSegment(ledsSBCfg, 1);
+  const uint16_t ledsSA[] = {108,109,110,111,112,113,114,115,116,117,118,119,120,121};
+  StripLEDConfig ledsSACfg[] = {{1, ledsSA, sizeof(ledsSA) / sizeof(ledsSA[0])}};
+  SASegment = scene3.createSegment(ledsSACfg, 1);
+  const uint16_t ledsTE[] = {};
+  StripLEDConfig ledsTECfg[] = {{1, ledsTE, sizeof(ledsTE) / sizeof(ledsTE[0])}};
+  TESegment = scene3.createSegment(ledsTECfg, 1);
+  const uint16_t ledsTD[] = {122,123};
+  StripLEDConfig ledsTDCfg[] = {{1, ledsTD, sizeof(ledsTD) / sizeof(ledsTD[0])}};
+  TDSegment = scene3.createSegment(ledsTDCfg, 1);
+  const uint16_t ledsTC[] = {};
+  StripLEDConfig ledsTCCfg[] = {{1, ledsTC, sizeof(ledsTC) / sizeof(ledsTC[0])}};
+  TCSegment = scene3.createSegment(ledsTCCfg, 1);
+  const uint16_t ledsTB[] = {};
+  StripLEDConfig ledsTBCfg[] = {{1, ledsTB, sizeof(ledsTB) / sizeof(ledsTB[0])}};
+  TBSegment = scene3.createSegment(ledsTBCfg, 1);
+  const uint16_t ledsTA[] = {};
+  StripLEDConfig ledsTACfg[] = {{1, ledsTA, sizeof(ledsTA) / sizeof(ledsTA[0])}};
+  TASegment = scene3.createSegment(ledsTACfg, 1);
+  const uint16_t ledsLB[] = {124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159};
+  StripLEDConfig ledsLBCfg[] = {{1, ledsLB, sizeof(ledsLB) / sizeof(ledsLB[0])}};
+  LBSegment = scene3.createSegment(ledsLBCfg, 1);
+  const uint16_t ledsMA[] = {160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188};
+  StripLEDConfig ledsMACfg[] = {{1, ledsMA, sizeof(ledsMA) / sizeof(ledsMA[0])}};
+  MASegment = scene3.createSegment(ledsMACfg, 1);
+  const uint16_t ledsSC[] = {189,190,191,192,193,194,195,196,197,198,199,200,201,202};
+  StripLEDConfig ledsSCCfg[] = {{1, ledsSC, sizeof(ledsSC) / sizeof(ledsSC[0])}};
+  SCSegment = scene3.createSegment(ledsSCCfg, 1);
+  const uint16_t ledsSD[] = {203,204,205,206,207,208,209,210,211,212,213,214,215,216};
+  StripLEDConfig ledsSDCfg[] = {{1, ledsSD, sizeof(ledsSD) / sizeof(ledsSD[0])}};
+  SDSegment = scene3.createSegment(ledsSDCfg, 1);
+  const uint16_t ledsMB[] = {217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245};
+  StripLEDConfig ledsMBCfg[] = {{1, ledsMB, sizeof(ledsMB) / sizeof(ledsMB[0])}};
+  MBSegment = scene3.createSegment(ledsMBCfg, 1);
+  const uint16_t ledsTF[] = {246,247};
+  StripLEDConfig ledsTFCfg[] = {{1, ledsTF, sizeof(ledsTF) / sizeof(ledsTF[0])}};
+  TFSegment = scene3.createSegment(ledsTFCfg, 1);
+}
 
 void initScene2Segments() {
   const uint16_t leds1[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247};
@@ -472,29 +524,37 @@ void initLoseYourselfShow() {
   Cue* silence = new Cue(&scene, 3000UL, bpmIntro);
   loseYourselfShow.addCue(silence);
 
-  Cue* cueIntro = new Cue(&scene, 8.0*4, bpmIntro);
-  auto piano1Intro = new PatternBeatAnimation("| Ee Ee Ee Ee | Ee Ee ee SsSs | Ee Ee Ee Ee | Ee Ee q q |", bpmIntro, CRGB::Blue);
-  auto piano2Intro = new PatternBeatAnimation("| eE eE eE eE | eE eE ee sSsS | eE eE eE eE | eE ee q q |", bpmIntro, CRGB::Blue);
-  piano1Intro->addSegment(piano1Segment, 100);
-  piano2Intro->addSegment(piano2Segment, 100);
+  Cue* cueIntro = new Cue(&scene3, 29100UL, bpmIntro);
+  auto piano1Intro = new TheatreChaseBeatAnimation("| SSSS |", bpmIntro, CRGB::Blue, 2);
+  // auto piano1Intro = new PatternBeatAnimation("| Ee Ee Ee Ee | Ee Ee ee SsSs | Ee Ee Ee Ee | Ee Ee q q |", bpmIntro, CRGB::Blue);
+  // auto piano2Intro = new PatternBeatAnimation("| eE eE eE eE | eE eE ee sSsS | eE eE eE eE | eE ee q q |", bpmIntro, CRGB::Blue);
+  piano1Intro->addSegment(MDSegment, 100);
+  piano1Intro->addSegment(MCSegment, 100);
+  piano1Intro->addSegment(MASegment, 100);
+  piano1Intro->addSegment(SCSegment, 100);
   cueIntro->addAnimation(piano1Intro);
-  cueIntro->addAnimation(piano2Intro);
   loseYourselfShow.addCue(cueIntro);
 
-  Cue* cueVerse1 = new Cue(&scene, 16.0*4, bpmMain);
+  Cue* cueVerse1 = new Cue(&scene3, 16.0*4, bpmMain);
   auto drums1 = new PatternBeatAnimation("| E e E e E e E e | E e E e E e E t t T t |", bpmMain, CRGB::Red);
   auto base1 = new PatternBeatAnimation("| wwwwwww | h q esTt | SsSs q h | SsSs q q esTt | Sse eSs Ssss q | Ee q SsSs esTt | SsSs q SsSs eSs | Sse q SsSs eTtTt | SsSs q SsSs | eE eE SsSs SsSs |  ", bpmMain, CRGB::Purple);
-  drums1->addSegment(drumSegment, 100);
-  base1->addSegment(baseSegment, 100);
+  drums1->addSegment(LASegment, 100);
+  drums1->addSegment(LBSegment, 100);
+  base1->addSegment(SBSegment, 100);
+  base1->addSegment(SASegment, 100);
+  base1->addSegment(TDSegment, 100);
   cueVerse1->addAnimation(drums1);
   cueVerse1->addAnimation(base1);
   loseYourselfShow.addCue(cueVerse1);
 
-  Cue* cueChorus1 = new Cue(&scene, 8.0*4, bpmMain);
+  Cue* cueChorus1 = new Cue(&scene3, 8.0*4, bpmMain);
   auto strings1 = new PatternBeatAnimation("| Q Q q q | Q Q Q Q |", bpmMain, CRGB::Yellow);
   auto base2 = new PatternBeatAnimation("| TtsTts TtsTts TtsTts TtsTts|  ", bpmMain, CRGB::Purple);
-  strings1->addSegment(stringSegment, 100);
-  base2->addSegment(baseSegment, 100);
+  strings1->addSegment(MBSegment, 100);
+  strings1->addSegment(SDSegment, 100);
+  base2->addSegment(SBSegment, 100);
+  base2->addSegment(SASegment, 100);
+  base2->addSegment(TDSegment, 100);
   cueChorus1->addAnimation(drums1);
   cueChorus1->addAnimation(piano1Intro);
   cueChorus1->addAnimation(strings1);
