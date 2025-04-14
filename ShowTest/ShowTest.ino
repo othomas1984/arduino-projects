@@ -8,6 +8,7 @@ CRGB strip2[STRIP2_LEDS];
 CRGB* strips[] = {strip1, strip2};
 
 #include <Show.h>
+#include <Pallets.h>
 
 // ----- Serial Sync Flag -----
 bool showStarted = false;
@@ -77,6 +78,7 @@ uint16_t getNoteDuration(char symbol, uint16_t bpm100) {
 #include <SegmentRainbowChaseAnimation.h>
 #include <TheatreChaseBeatAnimation.h>
 #include <TheatreChasePaletteBeatAnimation.h>
+#include <RandomSparkleBeatAnimation.h>
 
 // ----- Show Definition: "Lose Yourself" -----
 
@@ -212,15 +214,41 @@ void initWeAreYourFriendsShow() {
   Cue* silence = new Cue(&scene, 1220UL, bpm);
   weAreYourFriendsShow.addCue(silence);
 
-  Cue* introCue = new Cue(&scene2, 600.0, bpm);
-  // auto intro = new PatternBeatAnimation("| W |", bpm, CRGB::Wheat);
-  auto intro = new TheatreChasePaletteBeatAnimation("| QQQQQQQQQQQQQQQQQQ |", bpm, RainbowColors_p, false);
-  intro->addSegment(scene2Segment1, 50);
-  introCue->addAnimation(intro);
-  weAreYourFriendsShow.addCue(introCue);
-  Serial.println("Init: Cue1");
+  Cue* wholeStarsCue = new Cue(&scene2, 8.0, bpm);
+  CRGBPalette16 WhiteOnlyPalette(CRGB::White);
+  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W |", bpm, WhiteOnlyPalette, 30, 3);
+  wholeStarsAnimation->addSegment(LASegment, 50);
+  wholeStarsCue->addAnimation(wholeStarsAnimation);
+  weAreYourFriendsShow.addCue(wholeStarsCue);
 
-  weAreYourFriendsShow.repeats = true;
+  Cue* halfStarsCue = new Cue(&scene2, 8.0, bpm);
+  auto halfStarsAnimation = new RandomSparkleBeatAnimation("| HH |", bpm, make2StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72)), 30, 3); // Dark Blue to Deep Purple
+  halfStarsAnimation->addSegment(LBSegment, 50);
+  halfStarsCue->addAnimation(halfStarsAnimation);
+  halfStarsCue->addAnimation(wholeStarsAnimation);
+  weAreYourFriendsShow.addCue(halfStarsCue);
+
+  Cue* quarterStarsCue = new Cue(&scene2, 16.0, bpm);
+  auto quarterStarsAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, make2StopGradient(CRGB(48, 0, 72), CRGB(255, 60, 162)), 30, 4); // Deep Purple to Cosmic Pink
+  quarterStarsAnimation->addSegment(SCSegment, 50);
+  quarterStarsAnimation->addSegment(SDSegment, 50);
+  quarterStarsAnimation->addSegment(MCSegment, 50);
+  quarterStarsAnimation->addSegment(MDSegment, 50);
+  quarterStarsCue->addAnimation(quarterStarsAnimation);
+  quarterStarsCue->addAnimation(halfStarsAnimation);
+  quarterStarsCue->addAnimation(wholeStarsAnimation);
+  weAreYourFriendsShow.addCue(quarterStarsCue);
+
+  Cue* eighthStarsCue = new Cue(&scene2, 8.0, bpm);
+  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EEEEEEEE |", bpm, make2StopGradient(CRGB(255, 60, 162), CRGB(0, 255, 224)), 35, 2); // Cosmic Pink to Electric Teal
+  eighthStarsAnimation->addSegment(SASegment, 50);
+  eighthStarsAnimation->addSegment(SBSegment, 50);
+  eighthStarsCue->addAnimation(eighthStarsAnimation);
+  eighthStarsCue->addAnimation(quarterStarsAnimation);
+  eighthStarsCue->addAnimation(halfStarsAnimation);
+  eighthStarsCue->addAnimation(wholeStarsAnimation);
+  weAreYourFriendsShow.addCue(eighthStarsCue);
+
 }
 
 void initLoseYourselfShow() {
