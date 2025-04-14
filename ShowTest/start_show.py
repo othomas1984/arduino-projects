@@ -11,7 +11,7 @@ import select
 SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
 BAUD_RATE = 9600
 SONG_LENGTH_SECONDS = 200
-MAX_LOG_LINES = 10
+MAX_LOG_LINES = 25
 
 log_lines = []
 LOG_LOCK = Lock()
@@ -70,8 +70,10 @@ def read_input_custom():
                             subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])
                         elif raw == "SHOW:2":
                             start_time = time.time()
+                            subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                         elif raw == "SHOW:3":
                             start_time = time.time()
+                            subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                         elif raw == "SHOW:4":
                             track_uri = "spotify:track:596KUmMbTifuYdDC14lQdD"
                             subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])

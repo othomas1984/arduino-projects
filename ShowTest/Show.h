@@ -9,7 +9,6 @@ class Show {
 public:
   Cue* cues[MAX_CUES_PER_SHOW];
   uint8_t cueCount;
-  bool repeats = false;
 
   Show() : cueCount(0) {}
 

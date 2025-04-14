@@ -31,30 +31,30 @@ void syncToSerialTime(uint32_t reportedMillis) {
   //   Serial.println(" ms");
   //   return;
   // }
-  Serial.print("currentMillis: ");
-  Serial.println(currentMillis);
-  Serial.print("reportedMillis: ");
-  Serial.println(reportedMillis);
-  Serial.print("showStartMillis: ");
-  Serial.println(showStartMillis);
-  Serial.print("localElapsedMillis: ");
-  Serial.println(localElapsedMillis);
-  Serial.print("drift: ");
-  Serial.println(drift);
+  // Serial.print("currentMillis: ");
+  // Serial.println(currentMillis);
+  // Serial.print("reportedMillis: ");
+  // Serial.println(reportedMillis);
+  // Serial.print("showStartMillis: ");
+  // Serial.println(showStartMillis);
+  // Serial.print("localElapsedMillis: ");
+  // Serial.println(localElapsedMillis);
+  // Serial.print("drift: ");
+  // Serial.println(drift);
 
   // Limit correction to ±100ms
   // if (drift > 100L) drift = 100L;
   // if (drift < -100L) drift = -100L;
-  Serial.print("clamped drift: ");
-  Serial.println(drift);
+  // Serial.print("clamped drift: ");
+  // Serial.println(drift);
 
   showStartMillis -= drift;
-  Serial.print("new showStartMillis: ");
-  Serial.println(showStartMillis);
+  // Serial.print("new showStartMillis: ");
+  // Serial.println(showStartMillis);
 
   Serial.print("Drift correction applied: ");
-  Serial.print(drift);
-  Serial.println(" ms");
+  Serial.println(drift);
+  // Serial.println(" ms");
 }
 
 // ----- Note Duration with bpm100 -----
@@ -195,17 +195,18 @@ void initSegments() {
 }
 
 void initAmbianceShow() {
-  uint16_t bpm = 6000;
+  uint16_t bpm = 100;
 
   Cue* introCue = new Cue(&scene2, 600.0, bpm);
-  auto intro = new PatternBeatAnimation("| W |", bpm, CRGB::DarkViolet);
+  // auto intro = new PatternBeatAnimation("| W W |", bpm, CRGB(0, 0, 255)); // Pure Blue
+  // auto intro = new PatternBeatAnimation("| W W |", bpm, CRGB(0, 148, 255)); // Teal Blue
+  auto intro = new PatternBeatAnimation("| W W |", bpm, CRGB(200, 0, 100)); // Pink
   // auto intro = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, RainbowColors_p, false);
-  intro->addSegment(scene2Segment1, 50);
+  intro->addSegment(scene2Segment1, 100);
   introCue->addAnimation(intro);
   ambianceShow.addCue(introCue);
   Serial.println("Init: Cue1");
 
-  ambianceShow.repeats = true;
 }
 
 void initWeAreYourFriendsShow() {
@@ -215,34 +216,37 @@ void initWeAreYourFriendsShow() {
   weAreYourFriendsShow.addCue(silence);
 
   Cue* wholeStarsCue = new Cue(&scene2, 8.0, bpm);
-  CRGBPalette16 WhiteOnlyPalette(CRGB::White);
-  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W |", bpm, WhiteOnlyPalette, 30, 3);
+  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
   wholeStarsAnimation->addSegment(LASegment, 50);
   wholeStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(wholeStarsCue);
 
   Cue* halfStarsCue = new Cue(&scene2, 8.0, bpm);
-  auto halfStarsAnimation = new RandomSparkleBeatAnimation("| HH |", bpm, make2StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72)), 30, 3); // Dark Blue to Deep Purple
-  halfStarsAnimation->addSegment(LBSegment, 50);
+  auto halfStarsAnimation = new RandomSparkleBeatAnimation("| H H |", bpm, make2StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72)), 30, 2, 100, 3, 3, true); // Dark Blue to Deep Purple
+  halfStarsAnimation->addSegment(LBSegment, 20);
   halfStarsCue->addAnimation(halfStarsAnimation);
   halfStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(halfStarsCue);
 
   Cue* quarterStarsCue = new Cue(&scene2, 16.0, bpm);
-  auto quarterStarsAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, make2StopGradient(CRGB(48, 0, 72), CRGB(255, 60, 162)), 30, 4); // Deep Purple to Cosmic Pink
-  quarterStarsAnimation->addSegment(SCSegment, 50);
-  quarterStarsAnimation->addSegment(SDSegment, 50);
-  quarterStarsAnimation->addSegment(MCSegment, 50);
-  quarterStarsAnimation->addSegment(MDSegment, 50);
+  auto quarterStarsAnimation = new RandomSparkleBeatAnimation("| Q Q Q Q |", bpm, make2StopGradient(CRGB(48, 0, 72), CRGB(200, 0, 100)), 30, 3, 100, 3, 3, true); // Deep Purple to Cosmic Pink
+  quarterStarsAnimation->addSegment(SCSegment, 20);
+  quarterStarsAnimation->addSegment(SDSegment, 20);
+  quarterStarsAnimation->addSegment(MASegment, 20);
+  quarterStarsAnimation->addSegment(MBSegment, 20);
+  quarterStarsAnimation->addSegment(MCSegment, 20);
+  quarterStarsAnimation->addSegment(MDSegment, 20);
+  quarterStarsAnimation->addSegment(TFSegment, 20);
   quarterStarsCue->addAnimation(quarterStarsAnimation);
   quarterStarsCue->addAnimation(halfStarsAnimation);
   quarterStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(quarterStarsCue);
 
   Cue* eighthStarsCue = new Cue(&scene2, 8.0, bpm);
-  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EEEEEEEE |", bpm, make2StopGradient(CRGB(255, 60, 162), CRGB(0, 255, 224)), 35, 2); // Cosmic Pink to Electric Teal
-  eighthStarsAnimation->addSegment(SASegment, 50);
-  eighthStarsAnimation->addSegment(SBSegment, 50);
+  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EE EE EE EE |", bpm, make2StopGradient(CRGB(200, 0, 100), CRGB(0, 200, 150)), 35, 1, 100, 3, 3, true); // Cosmic Pink to Electric Teal
+  eighthStarsAnimation->addSegment(SASegment, 20);
+  eighthStarsAnimation->addSegment(SBSegment, 20);
+  eighthStarsAnimation->addSegment(TDSegment, 20);
   eighthStarsCue->addAnimation(eighthStarsAnimation);
   eighthStarsCue->addAnimation(quarterStarsAnimation);
   eighthStarsCue->addAnimation(halfStarsAnimation);

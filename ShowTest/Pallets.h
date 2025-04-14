@@ -40,11 +40,11 @@ inline CRGBPalette16 make4StopGradient(CRGB a, CRGB b, CRGB c, CRGB d) {
 // ===== Predefined palettes =====
 
 inline CRGBPalette16 WhitePalette() {
-  return CRGBPalette16(CRGB::White);
+  return CRGBPalette16(CRGB::DarkGray);
 }
 
 inline CRGBPalette16 WhiteToDarkBluePalette() {
-  return make2StopGradient(CRGB::White, CRGB(0, 0, 64));
+  return make2StopGradient(CRGB::DarkGray, CRGB(0, 0, 64));
 }
 
 inline CRGBPalette16 BlueToPurpleToSeaFoamPalette() {
