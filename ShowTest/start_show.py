@@ -19,7 +19,6 @@ log_lines = []
 LOG_LOCK = Lock()
 input_buffer = ""
 ser = None
-start_time = 0
 
 def log(message):
     with LOG_LOCK:
@@ -50,7 +49,7 @@ def read_serial(ser):
 
 # === FUNCTION: Handle Input Character-by-Character ===
 def read_input_custom():
-    global input_buffer, start_time
+    global input_buffer
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     tty.setcbreak(fd)
@@ -71,23 +70,36 @@ def read_input_custom():
                             stop_audio()
                             track_uri = "spotify:track:5Z01UMMf7V1o0MzF86s6WJ"
                             subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
-                            start_time = time.time()
                             subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])
                         elif raw == "SHOW:2":
                             stop_audio()
-                            start_time = time.time()
                             subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                         elif raw == "SHOW:3":
                             stop_audio()
-                            start_time = time.time()
                             subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                         elif raw == "SHOW:4":
                             subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                             stop_audio()
                             pygame.mixer.music.load(AUDIO_FILE)
                             pygame.mixer.music.play()
-                            start_time = time.time()
                             log("[Audio] Playing TheUAisYourFriend.mp3")
+                        elif raw.startswith("SEEK:"):
+                            try:
+                                val = raw[5:].strip()
+                                current_pos = pygame.mixer.music.get_pos()
+                                if val.startswith("+"):
+                                    new_pos = max(0, current_pos + int(val[1:]))
+                                elif val.startswith("-"):
+                                    new_pos = max(0, current_pos - int(val[1:]))
+                                else:
+                                    new_pos = max(0, int(val))
+                                pygame.mixer.music.stop()
+                                pygame.mixer.music.play(start=new_pos / 1000.0)
+                                log(f"[Audio] Seeked to {new_pos} ms")
+                                time.sleep(0.05)  # Let playback resume before next sync
+                                ser.write(f"T:{new_pos}\n".encode())
+                            except Exception as e:
+                                log(f"[Seek Error] {e}")
                     input_buffer = ""
                     redraw_console()
                 elif c == '\x7f':  # Backspace
@@ -131,15 +143,17 @@ track_uri = "spotify:track:5Z01UMMf7V1o0MzF86s6WJ"
 subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
 
 # === Main Loop: Send Time Syncs ===
-start_time = time.time()
-
 subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])
 
 try:
     while True:
-        elapsed_sec = time.time() - start_time
-        elapsed_ms = int(elapsed_sec * 1000)
-        message = f"T:{elapsed_ms}\n"
+        # get_pos returns time in milliseconds since playback started
+        pos_ms = pygame.mixer.music.get_pos()
+        if pos_ms < 0:
+            log("[Host →] get_pos() returned -1, skipping sync")
+            time.sleep(10)
+            continue
+        message = f"T:{pos_ms}\n"
         ser.write(message.encode())
         log(f"[Host →] Sending: {message.strip()}")
         time.sleep(10)
