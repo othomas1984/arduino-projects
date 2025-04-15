@@ -214,7 +214,7 @@ void initWeAreYourFriendsShow() {
 
   Cue* introCue = new Cue(&scene, 44000UL, bpm);
   auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
-  introAnimation->addSegment(LASegment, 50);
+  introAnimation->addSegment(TFSegment, 50);
   introCue->addAnimation(introAnimation);
   weAreYourFriendsShow.addCue(introCue);
 
@@ -262,7 +262,7 @@ void initLoseYourselfShow() {
   uint16_t bpmIntro = 6593;
   uint16_t bpmMain  = 8572;
 
-  Cue* silence = new Cue(&scene3, 3000UL, bpmIntro);
+  Cue* silence = new Cue(&scene3, 3500UL, bpmIntro);
   loseYourselfShow.addCue(silence);
 
   Cue* cueIntro = new Cue(&scene3, 8.0*4, bpmIntro);
