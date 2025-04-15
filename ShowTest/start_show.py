@@ -76,11 +76,7 @@ def read_input_custom():
                             stop_audio()
                             # subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                         elif raw == "SHOW:4":
-                            # subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
-                            stop_audio()
-                            pygame.mixer.music.load(WE_ARE_AUDIO_FILE)
-                            pygame.mixer.music.play()
-                            log("[Audio] Playing TheUAisYourFriend.mp3")
+                            play_show_4()
                         elif raw.startswith("SEEK:"):
                             log(f"[HOST] {raw}")
                             try:
@@ -123,9 +119,18 @@ def read_input_custom():
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
 def play_show_1():
+    ser.write(b'SHOW:1\n')
     stop_audio()
     pygame.mixer.music.load(LOSE_YOURSELF_AUDIO_FILE)
     pygame.mixer.music.play()
+    log("[Audio] Playing Eminem_Lose_Yourself.mp3")
+
+def play_show_4():
+    ser.write(b'SHOW:4\n')
+    stop_audio()
+    pygame.mixer.music.load(WE_ARE_AUDIO_FILE)
+    pygame.mixer.music.play()
+    log("[Audio] Playing TheUAisYourFriend.mp3")
 
 def stop_audio():
     try:
@@ -151,8 +156,7 @@ time.sleep(1)
 
 # === Send 's' to Start the Show ===
 log("[Host →] Sending: s")
-ser.write(b'SHOW:1\n')
-play_show_1()
+play_show_4()
 
 # === Start Spotify AFTER Arduino is ready ===
 # log("Starting Spotify playback...")

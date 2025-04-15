@@ -9,7 +9,7 @@ public:
   uint16_t bpm100;
   unsigned long totalDuration;
   uint8_t brightnessPercent = 100;
-  uint8_t spacing = 3;
+  uint8_t spacing;
   bool isReversed;
   CRGBPalette16 palette;
 
@@ -17,12 +17,14 @@ public:
     const char* pattern,
     uint16_t bpm100,
     const CRGBPalette16& palette,
-    bool isReversed = false
+    bool isReversed = false,
+    uint8_t spacing = 3
   )
     : pattern(pattern),
       bpm100(bpm100),
       palette(palette),
       isReversed(isReversed),
+      spacing(spacing),
       totalDuration(0) {
 
     for (uint16_t i = 0; pattern[i]; i++) {

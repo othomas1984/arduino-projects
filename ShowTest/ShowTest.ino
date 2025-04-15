@@ -212,13 +212,13 @@ void initAmbianceShow() {
 void initWeAreYourFriendsShow() {
   uint16_t bpm = 12293;
 
-  Cue* introCue = new Cue(&scene, 44000UL, bpm);
-  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
+  Cue* introCue = new Cue(&scene, 43800UL, bpm);
+  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, WhitePalette(), 10, 3, 100, 3, 3, true);
   introAnimation->addSegment(TFSegment, 50);
   introCue->addAnimation(introAnimation);
   weAreYourFriendsShow.addCue(introCue);
 
-  Cue* wholeStarsCue = new Cue(&scene2, 8.0, bpm);
+  Cue* wholeStarsCue = new Cue(&scene2, 16.0, bpm);
   auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
   wholeStarsAnimation->addSegment(LASegment, 50);
   wholeStarsCue->addAnimation(wholeStarsAnimation);
@@ -245,8 +245,8 @@ void initWeAreYourFriendsShow() {
   quarterStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(quarterStarsCue);
 
-  Cue* eighthStarsCue = new Cue(&scene2, 8.0, bpm);
-  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EE EE EE EE |", bpm, make2StopGradient(CRGB(200, 0, 100), CRGB(0, 200, 150)), 35, 1, 100, 3, 3, true); // Cosmic Pink to Electric Teal
+  Cue* eighthStarsCue = new Cue(&scene2, 5.0, bpm);
+  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EE EE EE EE | EE |", bpm, make2StopGradient(CRGB(200, 0, 100), CRGB(0, 200, 150)), 35, 1, 100, 3, 3, true); // Cosmic Pink to Electric Teal
   eighthStarsAnimation->addSegment(SASegment, 20);
   eighthStarsAnimation->addSegment(SBSegment, 20);
   eighthStarsAnimation->addSegment(TDSegment, 20);
@@ -255,6 +255,49 @@ void initWeAreYourFriendsShow() {
   eighthStarsCue->addAnimation(halfStarsAnimation);
   eighthStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(eighthStarsCue);
+
+  Cue* chorus1Cue1 = new Cue(&scene2, 7.0, bpm);
+  Cue* chorus1Cue2 = new Cue(&scene2, 28.0, bpm);
+  auto chorus1BecauseWeAnimation = new TheatreChasePaletteBeatAnimation("q sS sS | ss q h |", bpm, make4StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72), CRGB(200, 0, 100), CRGB(0, 200, 150)), true, 1);
+  auto chorus1CymbalCrashAnimation = new TheatreChasePaletteBeatAnimation("q h | Q q h |", bpm, make4StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72), CRGB(200, 0, 100), CRGB(0, 200, 150)), true, 1);
+  auto chorus1SynthLeftAnimation = new TheatreChasePaletteBeatAnimation("| EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe |", bpm, make4StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72), CRGB(200, 0, 100), CRGB(0, 200, 150)), true, 1);
+  auto chorus1SynthRightAnimation = new TheatreChasePaletteBeatAnimation("| qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | ", bpm, make4StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72), CRGB(200, 0, 100), CRGB(0, 200, 150)), true, 1);
+  auto chorus1Base12Animation = new TheatreChasePaletteBeatAnimation("| EeEeEEEE | EeEeEEEE | EeEeEEEE | EeEeEEEE | EeEeEEEE | EeEeEEEE | EeEeEEEE | ", bpm, CRGBPalette16(CRGB(0, 0, 68)), true, 2);
+  auto chorus1Base3Animation = new TheatreChasePaletteBeatAnimation("| qqEEEE | qqEEEE | qqEEEE | qqEEEE | qqEEEE | qqEEEE | qqEEEE | ", bpm, make2StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72)), true, 3);
+  auto chorus1Base3AndAnimation = new TheatreChasePaletteBeatAnimation("| qqeEEE | qqeEEE | qqeEEE | qqeEEE | qqeEEE | qqeEEE | qqeEEE | ", bpm, make2StopGradient(CRGB(0, 0, 68), CRGB(48, 0, 72)), false, 3);
+  auto chorus1Base4Animation = new TheatreChasePaletteBeatAnimation("| qqeeEE | qqeeEE | qqeeEE | qqeeEE | qqeeEE | qqeeEE | qqeeEE | ", bpm, make2StopGradient(CRGB(48, 0, 72), CRGB(200, 0, 100)), false, 3);
+  auto chorus1Base4AndAnimation = new TheatreChasePaletteBeatAnimation("| qqeeeE | qqeeeE | qqeeeE | qqeeeE | qqeeeE | qqeeeE | qqeeeE | ", bpm, make2StopGradient(CRGB(200, 0, 100), CRGB(0, 200, 150)), false, 3);
+  chorus1BecauseWeAnimation->addSegment(LASegment, 70);
+  chorus1BecauseWeAnimation->addSegment(LBSegment, 70);
+  chorus1BecauseWeAnimation->addSegment(SASegment, 70);
+  chorus1BecauseWeAnimation->addSegment(SBSegment, 70);
+  chorus1CymbalCrashAnimation->addSegment(MBSegment, 70);
+  chorus1CymbalCrashAnimation->addSegment(SDSegment, 70);
+  chorus1CymbalCrashAnimation->addSegment(TFSegment, 70);
+  chorus1SynthLeftAnimation->addSegment(MASegment, 20);
+  chorus1SynthLeftAnimation->addSegment(SCSegment, 20);
+  chorus1SynthRightAnimation->addSegment(MCSegment, 20);
+  chorus1SynthRightAnimation->addSegment(MDSegment, 20);
+  // chorus1Base12Animation->addSegment(TASegment, 20);
+  // chorus1Base12Animation->addSegment(TBSegment, 20);
+  // chorus1Base12Animation->addSegment(TCSegment, 20);
+  chorus1Base12Animation->addSegment(TDSegment, 20);
+  // chorus1Base12Animation->addSegment(TESegment, 20);
+  chorus1Base3Animation->addSegment(SASegment, 20);
+  chorus1Base3AndAnimation->addSegment(SBSegment, 20);
+  chorus1Base4Animation->addSegment(LBSegment, 20);
+  chorus1Base4AndAnimation->addSegment(LASegment, 20);
+  chorus1Cue1->addAnimation(chorus1BecauseWeAnimation);
+  chorus1Cue1->addAnimation(chorus1CymbalCrashAnimation);
+  chorus1Cue2->addAnimation(chorus1SynthLeftAnimation);
+  chorus1Cue2->addAnimation(chorus1SynthRightAnimation);
+  chorus1Cue2->addAnimation(chorus1Base12Animation);
+  chorus1Cue2->addAnimation(chorus1Base3Animation);
+  chorus1Cue2->addAnimation(chorus1Base3AndAnimation);
+  chorus1Cue2->addAnimation(chorus1Base4Animation);
+  chorus1Cue2->addAnimation(chorus1Base4AndAnimation);
+  weAreYourFriendsShow.addCue(chorus1Cue1);
+  weAreYourFriendsShow.addCue(chorus1Cue2);
 
 }
 
