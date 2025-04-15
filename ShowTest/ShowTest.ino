@@ -212,8 +212,11 @@ void initAmbianceShow() {
 void initWeAreYourFriendsShow() {
   uint16_t bpm = 12293;
 
-  Cue* silence = new Cue(&scene, 1220UL, bpm);
-  weAreYourFriendsShow.addCue(silence);
+  Cue* introCue = new Cue(&scene, 44000UL, bpm);
+  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
+  introAnimation->addSegment(LASegment, 50);
+  introCue->addAnimation(introAnimation);
+  weAreYourFriendsShow.addCue(introCue);
 
   Cue* wholeStarsCue = new Cue(&scene2, 8.0, bpm);
   auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
