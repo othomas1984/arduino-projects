@@ -7,6 +7,14 @@ import termios
 import tty
 import select
 
+
+# for audio
+from pydub import AudioSegment
+import simpleaudio as sa
+
+# Load audio (MP3, WAV, etc.)
+play_obj = None
+
 # === CONFIGURATION ===
 SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
 BAUD_RATE = 9600
@@ -48,7 +56,7 @@ def read_serial(ser):
 
 # === FUNCTION: Handle Input Character-by-Character ===
 def read_input_custom():
-    global input_buffer
+    global input_buffer, play_obj
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     tty.setcbreak(fd)
@@ -63,7 +71,10 @@ def read_input_custom():
                         ser.write(message.encode())
                         log(f"[Host →] (manual) Sent: {raw}")
                         global start_time
-                        if raw == "SHOW:1":
+                        if raw == "x":
+                            subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+                            stop_audio()
+                        elif raw == "SHOW:1":
                             track_uri = "spotify:track:5Z01UMMf7V1o0MzF86s6WJ"
                             subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
                             start_time = time.time()
@@ -75,10 +86,18 @@ def read_input_custom():
                             start_time = time.time()
                             subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
                         elif raw == "SHOW:4":
-                            track_uri = "spotify:track:596KUmMbTifuYdDC14lQdD"
-                            subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
+                            subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+                            usIsYourFriend = AudioSegment.from_file("TheUAisYourFriend.mp3")
+                            play_obj = sa.play_buffer(
+                                usIsYourFriend.raw_data,
+                                num_channels=usIsYourFriend.channels,
+                                bytes_per_sample=usIsYourFriend.sample_width,
+                                sample_rate=usIsYourFriend.frame_rate
+                            )
+                            # track_uri = "spotify:track:596KUmMbTifuYdDC14lQdD"
+                            # subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
                             start_time = time.time()
-                            subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])                            
+                            # subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])
                     input_buffer = ""
                     redraw_console()
                 elif c == '\x7f':  # Backspace
@@ -89,6 +108,18 @@ def read_input_custom():
                     redraw_console()
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+def stop_audio():
+    global play_obj
+    try:
+        if play_obj:
+            if play_obj.is_playing():
+                play_obj.stop()
+            # Whether stopped or done, drop the reference
+            play_obj = None
+    except Exception as e:
+        log(f"[Audio Error] Failed to stop playback: {e}")
+        play_obj = None
 
 # === Start Spotify Prep ===
 subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
@@ -105,7 +136,7 @@ Thread(target=read_input_custom, daemon=True).start()
 
 # === Send 's' to Start the Show ===
 log("[Host →] Sending: s")
-ser.write(b's\n')
+ser.write(b'SHOW:1\n')
 
 # === Start Spotify AFTER Arduino is ready ===
 log("Starting Spotify playback...")
