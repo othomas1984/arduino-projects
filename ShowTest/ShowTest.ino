@@ -83,7 +83,7 @@ uint16_t getNoteDuration(char symbol, uint16_t bpm100) {
 
 // ----- Show Definition: "Lose Yourself" -----
 
-Scene scene, scene1, scene2, scene3;
+Scene scene, scene1, scene2, scene3, scene4;
 Segment *piano1Segment, *piano2Segment, *drumSegment, *baseSegment, *stringSegment;
 Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *scene1Segment5, *scene1Segment6, *scene1Segment7;
 Segment *scene2Segment1;
@@ -139,6 +139,79 @@ void initStripSegments() {
   const uint16_t ledsTF[] = {254,255};
   StripLEDConfig ledsTFCfg[] = {{1, ledsTF, sizeof(ledsTF) / sizeof(ledsTF[0])}};
   TFSegment = scene3.createSegment(ledsTFCfg, 1);
+}
+
+Segment *CenterVerticalRow1Segment, *CenterVerticalRow2Segment, *CenterVerticalRow3Segment, *CenterVerticalRow4Segment, *CenterVerticalRow5Segment, *CenterVerticalRow6Segment,
+  *Foo;
+
+void initRowSegments() {
+  const uint16_t ledsCenterVerticalRow1[] = {
+    58,59,60,61,62,63,64,65, // LA
+    91,92,93, // LA
+    143,144,145,146,147,148,149, // LB
+  };
+  StripLEDConfig ledsCenterVerticalRow1Cfg[] = {{1, ledsCenterVerticalRow1, sizeof(ledsCenterVerticalRow1) / sizeof(ledsCenterVerticalRow1[0])}};
+  CenterVerticalRow1Segment = scene4.createSegment(ledsCenterVerticalRow1Cfg, 1);
+
+  const uint16_t ledsCenterVerticalRow2[] = {
+    66,67, // LA
+    89,90, // LA
+    141,142, // LB
+    150,151, // LB
+
+    100,99,98,97,96,95,94, // SB
+    116,117,118,119,120,121, // SA    
+  };
+  StripLEDConfig ledsCenterVerticalRow2Cfg[] = {{1, ledsCenterVerticalRow2, sizeof(ledsCenterVerticalRow2) / sizeof(ledsCenterVerticalRow2[0])}};
+  CenterVerticalRow2Segment = scene4.createSegment(ledsCenterVerticalRow2Cfg, 1);
+  
+  const uint16_t ledsCenterVerticalRow3[] = {
+    68,69, // LA
+    87,88, // LA
+    139,140, // LB
+    152,153, // LB
+
+    104,103,102,101, // SB
+    113,114,115, // SA    
+
+    122,123, // TE
+    124,125, // TD
+  };
+  StripLEDConfig ledsCenterVerticalRow3Cfg[] = {{1, ledsCenterVerticalRow3, sizeof(ledsCenterVerticalRow3) / sizeof(ledsCenterVerticalRow3[0])}};
+  CenterVerticalRow3Segment = scene4.createSegment(ledsCenterVerticalRow3Cfg, 1);
+
+  const uint16_t ledsCenterVerticalRow4[] = {
+    70,71, // LA
+    85,86, // LA
+    137,138, // LB
+    154,155, // LB
+    165,166,167, // LB
+
+    107,106,105, // SB
+    110,111,112, // SA    
+
+    126,127, // TC
+    128,129, // TB
+    130,131, // TA
+  };
+  StripLEDConfig ledsCenterVerticalRow4Cfg[] = {{1, ledsCenterVerticalRow4, sizeof(ledsCenterVerticalRow4) / sizeof(ledsCenterVerticalRow4[0])}};
+  CenterVerticalRow4Segment = scene4.createSegment(ledsCenterVerticalRow4Cfg, 1);
+
+  const uint16_t ledsCenterVerticalRow5[] = {
+    72, // LA
+    83,84, // LA
+    108,109, // SA    
+    132,133,134,135,136, // LB
+  };
+  StripLEDConfig ledsCenterVerticalRow5Cfg[] = {{1, ledsCenterVerticalRow5, sizeof(ledsCenterVerticalRow5) / sizeof(ledsCenterVerticalRow5[0])}};
+  CenterVerticalRow5Segment = scene4.createSegment(ledsCenterVerticalRow5Cfg, 1);
+
+  const uint16_t ledsCenterVerticalRow6[] = {
+    156,157,158,159,160,161,162,163,164, // LB
+    73,74,75,76,77,78,79,80,81,82, // LA
+  };
+  StripLEDConfig ledsCenterVerticalRow6Cfg[] = {{1, ledsCenterVerticalRow6, sizeof(ledsCenterVerticalRow6) / sizeof(ledsCenterVerticalRow6[0])}};
+  CenterVerticalRow6Segment = scene4.createSegment(ledsCenterVerticalRow6Cfg, 1);
 }
 
 void initScene2Segments() {
@@ -211,13 +284,70 @@ void initAmbianceShow() {
 }
 
 void initWeAreYourFriendsShow() {
+  uint16_t bpmIntro1 = 8160;
   uint16_t bpm = 12293;
+  uint16_t averageFastbpm = 25100;
+  
+  Cue* dingCue = new Cue(&scene4, 4500UL, bpmIntro1);
+  auto cueDing1Animation = new PatternBeatAnimation("| q EeEeEe| wwww |", bpmIntro1, CRGB::White);
+  cueDing1Animation->addSegment(TFSegment, 50);
+  dingCue->addAnimation(cueDing1Animation);
+  weAreYourFriendsShow.addCue(dingCue);
 
-  Cue* introCue = new Cue(&scene, 43800UL, bpm);
-  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", bpm, WhitePalette(), 10, 3, 100, 3, 3, true);
-  introAnimation->addSegment(TFSegment, 50);
-  introCue->addAnimation(introAnimation);
-  weAreYourFriendsShow.addCue(introCue);
+  Cue* loadingSlowCue = new Cue(&scene4, 24.0, bpmIntro1);
+  auto cueloadingSlowRow1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlowRow2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlowRow3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlowRow4Animation = new PatternBeatAnimation("| w | w | w | EeEeEeEe | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlowRow5Animation = new PatternBeatAnimation("| w | w | w | w | EeEeEeEe | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlowRow6Animation = new PatternBeatAnimation("| w | w | w | w | w | EeEeEeEe |", bpmIntro1, CRGB::White);
+  cueloadingSlowRow1Animation->addSegment(CenterVerticalRow1Segment, 50);
+  cueloadingSlowRow2Animation->addSegment(CenterVerticalRow2Segment, 50);
+  cueloadingSlowRow3Animation->addSegment(CenterVerticalRow3Segment, 50);
+  cueloadingSlowRow4Animation->addSegment(CenterVerticalRow4Segment, 50);
+  cueloadingSlowRow5Animation->addSegment(CenterVerticalRow5Segment, 50);
+  cueloadingSlowRow6Animation->addSegment(CenterVerticalRow6Segment, 50);
+  loadingSlowCue->addAnimation(cueloadingSlowRow1Animation);
+  loadingSlowCue->addAnimation(cueloadingSlowRow2Animation);
+  loadingSlowCue->addAnimation(cueloadingSlowRow3Animation);
+  loadingSlowCue->addAnimation(cueloadingSlowRow4Animation);
+  loadingSlowCue->addAnimation(cueloadingSlowRow5Animation);
+  loadingSlowCue->addAnimation(cueloadingSlowRow6Animation);
+  weAreYourFriendsShow.addCue(loadingSlowCue);
+
+  Cue* loadingSlow2Cue = new Cue(&scene4, 9.0, bpmIntro1);
+  auto cueloadingSlow2Row1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlow2Row2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlow2Row3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", bpmIntro1, CRGB::White);
+  cueloadingSlow2Row1Animation->addSegment(CenterVerticalRow1Segment, 50);
+  cueloadingSlow2Row2Animation->addSegment(CenterVerticalRow2Segment, 50);
+  cueloadingSlow2Row3Animation->addSegment(CenterVerticalRow3Segment, 50);
+  loadingSlow2Cue->addAnimation(cueloadingSlow2Row1Animation);
+  loadingSlow2Cue->addAnimation(cueloadingSlow2Row2Animation);
+  loadingSlow2Cue->addAnimation(cueloadingSlow2Row3Animation);
+  weAreYourFriendsShow.addCue(loadingSlow2Cue);
+
+  Cue* loadingFastCue = new Cue(&scene4, 63.0, averageFastbpm);
+  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", averageFastbpm, WhitePalette(), 10, 3, 100, 3, 3, true);
+  auto loadingFastCueRow1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow4Animation = new PatternBeatAnimation("| w | w | w | EeEeEeEe | W | W |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow5Animation = new PatternBeatAnimation("| w | w | w | w | EeEeEeEe | W |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow6Animation = new PatternBeatAnimation("| w | w | w | w | w | EeEeEeEe |", averageFastbpm, CRGB::White);
+  loadingFastCueRow1Animation->addSegment(CenterVerticalRow1Segment, 50);
+  loadingFastCueRow2Animation->addSegment(CenterVerticalRow2Segment, 50);
+  loadingFastCueRow3Animation->addSegment(CenterVerticalRow3Segment, 50);
+  loadingFastCueRow4Animation->addSegment(CenterVerticalRow4Segment, 50);
+  loadingFastCueRow5Animation->addSegment(CenterVerticalRow5Segment, 50);
+  loadingFastCueRow6Animation->addSegment(CenterVerticalRow6Segment, 50);
+  loadingFastCue->addAnimation(loadingFastCueRow1Animation);
+  loadingFastCue->addAnimation(loadingFastCueRow2Animation);
+  loadingFastCue->addAnimation(loadingFastCueRow3Animation);
+  loadingFastCue->addAnimation(loadingFastCueRow4Animation);
+  loadingFastCue->addAnimation(loadingFastCueRow5Animation);
+  loadingFastCue->addAnimation(loadingFastCueRow6Animation);
+  weAreYourFriendsShow.addCue(loadingFastCue);
 
   Cue* wholeStarsCue = new Cue(&scene2, 16.0, bpm);
   auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
@@ -557,6 +687,7 @@ void setup() {
   Serial.println("Init: Scene1Segments");
   initScene2Segments();
   initStripSegments();
+  initRowSegments();
   Serial.println("Init: Scene1Segments");
   initLoseYourselfShow();
   initTestShow();
