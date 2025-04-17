@@ -2,6 +2,7 @@
 
 #define STRIP1_LEDS 256
 #define STRIP2_LEDS 29
+#define BUTTON_PIN 22
 
 CRGB strip1[STRIP1_LEDS];
 CRGB strip2[STRIP2_LEDS];
@@ -544,8 +545,12 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Setup");
   FastLED.addLeds<WS2812B, 21, RGB>(strip1, STRIP1_LEDS);
-  FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);
+  // FastLED.addLeds<WS2812B, 22, RGB>(strip2, STRIP2_LEDS);
   FastLED.setBrightness(51); // ~20%
+
+  // Setup Button
+  pinMode(BUTTON_PIN, INPUT);
+
   initSegments();
   Serial.println("Init: Segments");
   initScene1Segments();
@@ -581,7 +586,39 @@ bool parsePrefixedInt(const char* input, const char* prefix, uint32_t& outValue)
   return true;
 }
 
+int button_presses = 0;
+uint32_t button_debounce_last_pressed_millis = 0;
+uint32_t long_press_start_millis = 0;
+
 void loop() {
+
+  uint32_t time_since_last_detected_button_press = millis() - button_debounce_last_pressed_millis;
+  if(digitalRead(BUTTON_PIN) == HIGH) {
+    if(time_since_last_detected_button_press < 10) {
+      // No-op: Debounce electornics
+    } else if(time_since_last_detected_button_press < 500) {
+      // Multi-Tap
+      button_presses += 1;
+      Serial.print("Multi Press:");
+      Serial.println(button_presses);
+    } else if(time_since_last_detected_button_press > 1000) {
+      Serial.println("First Press");
+      button_presses = 1;
+      long_press_start_millis = millis();
+    }
+    button_debounce_last_pressed_millis = millis();
+  } else if(button_presses == 1 and millis() - long_press_start_millis > 1000 and millis() - long_press_start_millis < 5000) {
+    Serial.println("Long Press");
+    Serial.print("BTN:0");
+    button_presses = 0;
+    long_press_start_millis = 0;
+  } else if(button_presses > 0 and time_since_last_detected_button_press > 500) {
+    Serial.print("BTN:");
+    Serial.println(button_presses);
+    button_presses = 0;
+    long_press_start_millis = 0;
+  }
+
   if (Serial.available()) {
     size_t len = Serial.readBytesUntil('\n', serialBuffer, sizeof(serialBuffer) - 1);
     serialBuffer[len] = '\0';

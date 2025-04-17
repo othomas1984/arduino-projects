@@ -44,6 +44,17 @@ def read_serial(ser):
             line = ser.readline().decode(errors="ignore").strip()
             if line:
                 log(f"[Arduino →] {line}")
+                if line == "BTN:0":
+                    stop_audio()
+                    ser.write(b'x\n')
+                if line == "BTN:1":
+                    play_show_4()
+                if line == "BTN:7":
+                    play_show_1()
+                if line == "BTN:2":
+                    seek(20000)
+                if line == "BTN:3":
+                    seek(-10000)
         except Exception as e:
             log(f"[Serial Read Error] {e}")
             break
@@ -87,24 +98,17 @@ def read_input_custom():
                                     offset = int(val[1:])
                                     if offset < 500:
                                         offset = offset * 1000
-                                    new_pos = max(0, current_pos + offset)
+                                    seek(offset)
                                 elif val.startswith("-"):
                                     offset = int(val[1:])
                                     if offset < 500:
                                         offset = offset * 1000
-                                    new_pos = max(0, current_pos - offset)
+                                    seek(offset)
                                 else:
                                     offset = int(val)
                                     if offset < 500:
                                         offset = offset * 1000
-                                    new_pos = max(0, offset)
-                                pygame.mixer.music.stop()
-                                pygame.mixer.music.play(start=new_pos / 1000.0)
-                                last_seek_pos = new_pos
-                                log(f"[Audio] Seeked to {new_pos} ms")
-                                time.sleep(0.25)  # Let playback resume before next sync
-                                needs_seek_update = True
-                                # ser.write(f"T:{pygame.mixer.music.get_pos() + last_seek_pos}".encode())
+                                    seek_to(max(0, offset))
                             except Exception as e:
                                 log(f"[Seek Error] {e}")
                     input_buffer = ""
@@ -118,11 +122,26 @@ def read_input_custom():
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
+def seek(offset):
+    if(pygame.mixer.music.get_pos() < 0):
+        return
+    global last_seek_pos
+    current_pos = pygame.mixer.music.get_pos() + last_seek_pos
+    new_pos = max(0, current_pos + offset)
+    seek_to(new_pos)
+
+def seek_to(new_pos):
+    global last_seek_pos
+    pygame.mixer.music.stop()
+    pygame.mixer.music.play(start=new_pos / 1000.0)
+    set_last_seek_pos(new_pos)
+
 def play_show_1():
     ser.write(b'SHOW:1\n')
     stop_audio()
     pygame.mixer.music.load(LOSE_YOURSELF_AUDIO_FILE)
     pygame.mixer.music.play()
+    set_last_seek_pos(0)
     log("[Audio] Playing Eminem_Lose_Yourself.mp3")
 
 def play_show_4():
@@ -130,6 +149,7 @@ def play_show_4():
     stop_audio()
     pygame.mixer.music.load(WE_ARE_AUDIO_FILE)
     pygame.mixer.music.play()
+    set_last_seek_pos(0)
     log("[Audio] Playing TheUAisYourFriend.mp3")
 
 def stop_audio():
@@ -137,6 +157,13 @@ def stop_audio():
         pygame.mixer.music.stop()
     except Exception as e:
         log(f"[Audio Error] Failed to stop playback: {e}")
+
+def set_last_seek_pos(last_pos):
+    global last_seek_pos
+    last_seek_pos = last_pos
+    log(f"[Audio] Seeked to {last_pos} ms")
+    time.sleep(0.25)  # Let playback resume before next sync
+    needs_seek_update = True
 
 # === Start Spotify Prep ===
 # subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
@@ -173,6 +200,8 @@ last_sync = 0
 try:
     while True:
         # get_pos returns time in milliseconds since playback started
+        if(pygame.mixer.music.get_pos() < 0): 
+            continue
         pos_ms = last_seek_pos + pygame.mixer.music.get_pos()
         if pos_ms >= 0:
             if abs(pos_ms - last_sync) > 5000 or needs_seek_update:
