@@ -305,7 +305,7 @@ void initLoseYourselfShow() {
   uint16_t bpmIntro = 6593;
   uint16_t bpmMain  = 8572;
 
-  Cue* silence = new Cue(&scene3, 3500UL, bpmIntro);
+  Cue* silence = new Cue(&scene3, 2800UL, bpmIntro);
   loseYourselfShow.addCue(silence);
 
   Cue* cueIntro = new Cue(&scene3, 8.0*4, bpmIntro);
