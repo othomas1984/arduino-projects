@@ -190,6 +190,87 @@ public:
       }
     }
   }
+
+    void applyOverlay(unsigned long time, BlendMode mode) override {
+    if (totalDuration == 0) return;
+
+    unsigned long t = time % totalDuration;
+    unsigned long elapsed = 0;
+    uint16_t beatIndex = 0;
+
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+
+      bool isRest = (c >= 'a' && c <= 'z');
+      unsigned long duration = getNoteDuration(c, bpm100);
+      unsigned long fadeOutTail = (duration * fadeOutPercent) / 100;
+      unsigned long fadeOutEnd = fadeOutAfterBeat ? (elapsed + duration + fadeOutTail)
+                                                  : (elapsed + duration);
+
+      if (t < fadeOutEnd) {
+        float beatProgress = float(t - elapsed) / float(duration);
+        beatProgress = constrain(beatProgress, 0.0f, 1.0f);
+
+        float fadeMultiplier = 1.0f;
+
+        if (fadeOutAfterBeat && t >= elapsed + duration) {
+          float tailProgress = float(t - (elapsed + duration)) / float(fadeOutTail);
+          fadeMultiplier = 1.0f - constrain(tailProgress, 0.0f, 1.0f);
+        } else {
+          float fadeIn = fadeInPercent / 100.0f;
+          float fadeOut = fadeOutPercent / 100.0f;
+          if (fadeIn > 0 && beatProgress < fadeIn) {
+            fadeMultiplier = beatProgress / fadeIn;
+          } else if (!fadeOutAfterBeat && fadeOut > 0 && beatProgress > (1.0f - fadeOut)) {
+            fadeMultiplier = (1.0f - beatProgress) / fadeOut;
+          }
+        }
+
+        for (uint8_t j = 0; j < segmentCount; j++) {
+          const SegmentConfig& segCfg = segments[j];
+          Segment* seg = segCfg.segment;
+          uint16_t count = seg->ledCount;
+
+          uint16_t sparkleLEDs = (count * densityPercent) / 100;
+          uint16_t sparkleCount = max(1, sparkleLEDs / sparkleSize);
+          bool occupied[MAX_LEDS] = {false};
+
+          for (uint16_t s = 0; s < sparkleCount; s++) {
+            uint8_t attempts = 0;
+            uint16_t start = random(count);
+
+            while (attempts++ < 10) {
+              bool ok = true;
+              for (uint8_t o = 0; o < sparkleSize && (start + o) < count; o++) {
+                if (occupied[start + o]) {
+                  ok = false;
+                  break;
+                }
+              }
+              if (ok) break;
+              start = random(count);
+            }
+
+            uint8_t colorIndex = (random8() + beatIndex * 47 + s * 71) % 255;
+            CRGB color = ColorFromPalette(palette, colorIndex);
+            color.nscale8((brightnessPercent * segCfg.brightnessPercent) / 100);
+            color.nscale8(uint8_t(fadeMultiplier * 255));
+
+            for (uint8_t o = 0; o < sparkleSize && (start + o) < count; o++) {
+              occupied[start + o] = true;
+              CRGB& dst = seg->leds[start + o].strip[seg->leds[start + o].index];
+              dst = blendColor(dst, color, mode);
+            }
+          }
+        }
+        return;
+      }
+
+      if (!isRest) beatIndex++;
+      elapsed += duration;
+    }
+  }
 };
 
 #endif
