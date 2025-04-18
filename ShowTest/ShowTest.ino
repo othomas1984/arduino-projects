@@ -654,14 +654,17 @@ void initWeAreYourFriendsShow() {
   // Then have the LB ring of lights continue to pulse on the half note 4 times in yellow while the white lights stay on. (“You'll never be alone again). 
   // Then have the SB and SA lines pulse on the half note 4 times in orange while the white and yellow lights stay on. (“Well Come On x2”)
   // Have the TA TB TC TD TE lights pulse on the half note 4 times in red while the orange, yellow, and white lights stay on. (“Well Come On x2)
-  // For the remaining quarter notes (On the cymbal beat) of the chorus, pulse the same colors in reverse from the middle outwards so they are flashing out at the viewer (instead of the wall flashing in unison on the beat, have TA TB TC TD TE pulse on the cymbal quarter note, and the other layers pulse a split second after each other so it feels like a pulse coming out of the center)
+  
+  // For the remaining quarter notes (On the cymbal beat) of the chorus, pulse the same colors in reverse from the middle outwards so they are flashing 
+  // out at the viewer (instead of the wall flashing in unison on the beat, have TA TB TC TD TE pulse on the cymbal quarter note, and the other layers 
+  // pulse a split second after each other so it feels like a pulse coming out of the center)
   // TA TB TC TD TE: White
   // SA SB: Yellow
   // LB: Orange
   // LA: Red
   Cue* chorus5Cue1 = new Cue(&scene2, 32.0, bpm);
-  auto chorus5SynthLeftAnimation = new TheatreChasePaletteBeatAnimation("| w | w | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe |", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
-  auto chorus5SynthRightAnimation = new TheatreChasePaletteBeatAnimation("| w | w | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | ", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
+  auto chorus5SynthLeftAnimation = new TheatreChasePaletteBeatAnimation("| w | w | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe |", bpm, make3StopGradient(darkBlue, deepPurple, electricTeal), true, 1);
+  auto chorus5SynthRightAnimation = new TheatreChasePaletteBeatAnimation("| w | w | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | ", bpm, make3StopGradient(darkBlue, deepPurple, electricTeal), true, 1);
   chorus5SynthLeftAnimation->addSegment(MASegment, 20);
   chorus5SynthLeftAnimation->addSegment(SCSegment, 20);
   chorus5SynthRightAnimation->addSegment(MCSegment, 20);
@@ -678,7 +681,7 @@ void initWeAreYourFriendsShow() {
   chorus5Cue1->addAnimation(instrumentalBase6Animation);
 
   // Copy-paste keyboard so we can use just the second half
-  auto instrumentalKeyboardSecondHalfAnimation = new TheatreChasePaletteBeatAnimation("| wwww | QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ |", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 2);
+  auto instrumentalKeyboardSecondHalfAnimation = new TheatreChasePaletteBeatAnimation("| wwww | QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ |", bpm, make3StopGradient(darkBlue, deepPurple, electricTeal), true, 2);
   instrumentalKeyboardSecondHalfAnimation->addSegment(MBSegment, 50);
   instrumentalKeyboardSecondHalfAnimation->addSegment(SDSegment, 50);
   instrumentalKeyboardSecondHalfAnimation->addSegment(TFSegment, 50);
