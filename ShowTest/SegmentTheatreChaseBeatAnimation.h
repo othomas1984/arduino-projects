@@ -58,6 +58,46 @@ public:
       if (!isRest) beatIndex++;
     }
   }
+
+  void applyOverlay(unsigned long time, BlendMode mode) override {
+    if (totalDuration == 0 || segmentCount == 0) return;
+
+    unsigned long t = time % totalDuration;
+    unsigned long elapsed = 0;
+    uint16_t beatIndex = 0;
+
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+
+      unsigned long duration = getNoteDuration(c, bpm100);
+      bool isRest = (c >= 'a' && c <= 'z');
+
+      if (t < elapsed + duration) {
+        for (uint8_t j = 0; j < segmentCount; j++) {
+          const SegmentConfig& segCfg = segments[j];
+          Segment* seg = segCfg.segment;
+
+          uint8_t segIndex = isReversed ? (segmentCount - 1 - j) : j;
+
+          CRGB overlay = CRGB::Black;
+          if (!isRest && ((segIndex + beatIndex) % spacing == 0)) {
+            overlay = color;
+            overlay.nscale8_video((brightnessPercent * segCfg.brightnessPercent) / 100);
+          }
+
+          for (uint8_t k = 0; k < seg->ledCount; k++) {
+            CRGB& dst = seg->leds[k].strip[seg->leds[k].index];
+            dst = blendColor(dst, overlay, mode);
+          }
+        }
+        break;
+      }
+
+      elapsed += duration;
+      if (!isRest) beatIndex++;
+    }
+  }
 };
 
 #endif
