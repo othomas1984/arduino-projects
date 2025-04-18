@@ -4,7 +4,7 @@
 #include <Animation.h>
 #include <Scene.h>
 
-#define MAX_ANIMATIONS_PER_SCENE 8
+#define MAX_ANIMATIONS_PER_SCENE 12
 
 class Cue {
 public:

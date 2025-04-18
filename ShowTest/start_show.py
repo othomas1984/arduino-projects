@@ -55,6 +55,8 @@ def read_serial(ser):
                     seek(20000)
                 if line == "BTN:3":
                     seek(-10000)
+                if line == "BTN:100":
+                    play_show_3()
         except Exception as e:
             log(f"[Serial Read Error] {e}")
             break
@@ -144,6 +146,12 @@ def play_show_1():
     set_last_seek_pos(0)
     log("[Audio] Playing Eminem_Lose_Yourself.mp3")
 
+def play_show_3():
+    ser.write(b'SHOW:3\n')
+    stop_audio()
+    set_last_seek_pos(0)
+    log("[Audio] No Audio: Ambiance show playing")
+
 def play_show_4():
     ser.write(b'SHOW:4\n')
     stop_audio()
@@ -183,7 +191,7 @@ time.sleep(1)
 
 # === Send 's' to Start the Show ===
 log("[Host →] Sending: s")
-play_show_4()
+play_show_3()
 
 # === Start Spotify AFTER Arduino is ready ===
 # log("Starting Spotify playback...")

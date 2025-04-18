@@ -25,6 +25,10 @@ public:
     }
   }
 
+  void clearSegments() {
+    segmentCount = 0;
+  }
+
   virtual void apply(unsigned long time) = 0;
 };
 

@@ -9,12 +9,15 @@ class Show {
 public:
   Cue* cues[MAX_CUES_PER_SHOW];
   uint8_t cueCount;
+  bool repeats = false;
+  unsigned long totalDurationMillis = 0;
 
   Show() : cueCount(0) {}
 
   void addCue(Cue* cue) {
     if (cueCount < MAX_CUES_PER_SHOW) {
       cues[cueCount++] = cue;
+      totalDurationMillis += cue->duration;
     }
   }
 
@@ -32,6 +35,10 @@ public:
       }
       offset += cues[i]->duration;
     }
+  }
+
+  bool isFinished(unsigned long elapsedMillis) {
+    return !repeats && elapsedMillis > totalDurationMillis;
   }
 };
 
