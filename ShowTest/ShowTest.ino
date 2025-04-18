@@ -592,8 +592,8 @@ void initWeAreYourFriendsShow() {
   // TODO: Occasionally flash a big pink X with black background
   Cue* chorus2Cue1 = new Cue(&scene2, 32.0, bpm/32.0*32.5);
 
-  auto xOnAnimation = new PatternBeatAnimation("| wSfSfwwFfFfS |", bpm, CRGB(200, 0, 100));
-  auto xOffAnimation = new PatternBeatAnimation("| wSfSfwwFfFfS |", bpm, CRGB::Black);
+  auto xOnAnimation = new PatternBeatAnimation("| w | ffFtFte q h | h q fFftFte | w | h q efFftT | q fTtFtfTtFt h | w | h q Q |", bpm, CRGB(200, 0, 100));
+  auto xOffAnimation = new PatternBeatAnimation("| w | ffFtFte q h | h q fFftFte | w | h q efFftT | q fTtFtfTtFt h | w | h q Q |", bpm, CRGB::Black);
   xOnAnimation->addSegment(XOnSegment, 100);
   xOffAnimation->addSegment(XOffSegment, 100);
   chorus2Cue1->addOverlay(xOnAnimation, BLEND_REPLACE);
