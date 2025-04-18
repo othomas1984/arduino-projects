@@ -109,8 +109,10 @@ public:
               }
             }
 
-            CRGB& dst = seg->leds[k].strip[seg->leds[k].index];
-            dst = blendColor(dst, overlay, mode);
+            if (!isRest) {
+              CRGB& dst = seg->leds[k].strip[seg->leds[k].index];
+              dst = blendColor(dst, overlay, mode);
+            }
           }
         }
         break;

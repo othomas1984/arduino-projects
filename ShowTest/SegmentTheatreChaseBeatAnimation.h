@@ -86,9 +86,11 @@ public:
             overlay.nscale8_video((brightnessPercent * segCfg.brightnessPercent) / 100);
           }
 
-          for (uint8_t k = 0; k < seg->ledCount; k++) {
-            CRGB& dst = seg->leds[k].strip[seg->leds[k].index];
-            dst = blendColor(dst, overlay, mode);
+          if (!isRest) {
+            for (uint8_t k = 0; k < seg->ledCount; k++) {
+              CRGB& dst = seg->leds[k].strip[seg->leds[k].index];
+              dst = blendColor(dst, overlay, mode);
+            }
           }
         }
         break;

@@ -257,10 +257,12 @@ public:
             color.nscale8((brightnessPercent * segCfg.brightnessPercent) / 100);
             color.nscale8(uint8_t(fadeMultiplier * 255));
 
-            for (uint8_t o = 0; o < sparkleSize && (start + o) < count; o++) {
-              occupied[start + o] = true;
-              CRGB& dst = seg->leds[start + o].strip[seg->leds[start + o].index];
-              dst = blendColor(dst, color, mode);
+            if (!isRest) {
+              for (uint8_t o = 0; o < sparkleSize && (start + o) < count; o++) {
+                occupied[start + o] = true;
+                CRGB& dst = seg->leds[start + o].strip[seg->leds[start + o].index];
+                dst = blendColor(dst, color, mode);
+              }
             }
           }
         }
