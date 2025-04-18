@@ -42,6 +42,40 @@ public:
       elapsed += duration;
     }
   }
+
+  void applyOverlay(unsigned long time, BlendMode mode) override {
+    unsigned long t = time % totalDuration;
+    unsigned long elapsed = 0;
+
+    for (uint16_t i = 0; pattern[i]; i++) {
+      char c = pattern[i];
+      if (c == '|' || c == ' ') continue;
+
+      unsigned long dur = getNoteDuration(c, bpm100);
+      if (t < elapsed + dur) {
+        bool isRest = (c >= 'a' && c <= 'z');
+        CRGB overlayColor = isRest ? CRGB::Black : color;
+
+        for (uint8_t j = 0; j < segmentCount; j++) {
+          const SegmentConfig& segCfg = segments[j];
+          Segment* seg = segCfg.segment;
+
+          // Brightness adjustment before blending
+          overlayColor.nscale8_video((brightnessPercent * segCfg.brightnessPercent) / 100);
+
+          for (uint8_t k = 0; k < seg->ledCount; k++) {
+            CRGB& dst = seg->leds[k].strip[seg->leds[k].index];
+            dst = blendColor(dst, overlayColor, mode);
+          }
+        }
+
+        return; // only process one note
+      }
+
+      elapsed += dur;
+    }
+  }
+
 };
 
 #endif
