@@ -606,16 +606,6 @@ void initWeAreYourFriendsShow() {
   weAreYourFriendsShow.addCue(chorus4Cue1);
 
   // 164
-  Cue* chorus5Cue1 = new Cue(&scene2, 32.0, bpm);
-  chorus5Cue1->addAnimation(chorus1SynthLeftAnimation);
-  chorus5Cue1->addAnimation(chorus1SynthRightAnimation);
-  chorus5Cue1->addAnimation(chorus1Base12Animation);
-  chorus5Cue1->addAnimation(chorus1Base3Animation);
-  chorus5Cue1->addAnimation(chorus1Base3AndAnimation);
-  chorus5Cue1->addAnimation(chorus1Base4Animation);
-  chorus5Cue1->addAnimation(chorus1Base4AndAnimation);
-
-  // Reuse instrumental drum and Keyboard
   // TODO: Follow Taylor's Instructions
   // For this section:
   // Have the LA perimeter of lights pulse on the half note 4 times in white. (“We are your friends”) 
@@ -627,13 +617,30 @@ void initWeAreYourFriendsShow() {
   // SA SB: Yellow
   // LB: Orange
   // LA: Red
+  Cue* chorus5Cue1 = new Cue(&scene2, 32.0, bpm);
+  auto chorus5SynthLeftAnimation = new TheatreChasePaletteBeatAnimation("| w | w | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe |", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
+  auto chorus5SynthRightAnimation = new TheatreChasePaletteBeatAnimation("| w | w | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | EeEeEeEe | qqqq | ", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
+  chorus5SynthLeftAnimation->addSegment(MASegment, 20);
+  chorus5SynthLeftAnimation->addSegment(SCSegment, 20);
+  chorus5SynthRightAnimation->addSegment(MCSegment, 20);
+  chorus5SynthRightAnimation->addSegment(MDSegment, 20);
+  chorus5Cue1->addAnimation(chorus5SynthLeftAnimation);
+  chorus5Cue1->addAnimation(chorus5SynthRightAnimation);
+
+  // Reuse instrumental drum and Keyboard
   chorus5Cue1->addAnimation(instrumentalBase1Animation);
   chorus5Cue1->addAnimation(instrumentalBase2Animation);
   chorus5Cue1->addAnimation(instrumentalBase3Animation);
   chorus5Cue1->addAnimation(instrumentalBase4Animation);
   chorus5Cue1->addAnimation(instrumentalBase5Animation);
   chorus5Cue1->addAnimation(instrumentalBase6Animation);
-  chorus5Cue1->addAnimation(instrumentalKeyboardAnimation);
+
+  // Copy-paste keyboard so we can use just the second half
+  auto instrumentalKeyboardSecondHalfAnimation = new TheatreChasePaletteBeatAnimation("| wwww | QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ |", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 2);
+  instrumentalKeyboardSecondHalfAnimation->addSegment(MBSegment, 50);
+  instrumentalKeyboardSecondHalfAnimation->addSegment(SDSegment, 50);
+  instrumentalKeyboardSecondHalfAnimation->addSegment(TFSegment, 50);
+  chorus5Cue1->addAnimation(instrumentalKeyboardSecondHalfAnimation);
   weAreYourFriendsShow.addCue(chorus5Cue1);
 
   // 178
