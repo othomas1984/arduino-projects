@@ -10,6 +10,7 @@ public:
   uint16_t bpm100;
   bool loopPalette;
   unsigned long totalDuration;
+  uint8_t brightnessPercent = 100;
 
   SmoothPaletteFadeBeatAnimation(
     const char* pattern,
@@ -142,9 +143,6 @@ public:
       elapsed += noteDuration;
     }
   }
-
-  uint8_t brightnessPercent = 100;
 };
-
 
 #endif
