@@ -88,7 +88,7 @@ uint16_t getNoteDuration(char symbol, uint16_t bpm100) {
 
 // ----- Show Definition: "Lose Yourself" -----
 
-Scene scene, scene1, scene2, scene3, scene4;
+Scene scene, scene1, scene2, scene3, scene4, scene5;
 Segment *piano1Segment, *piano2Segment, *drumSegment, *baseSegment, *stringSegment;
 Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *scene1Segment5, *scene1Segment6, *scene1Segment7;
 Segment *scene2Segment1;
@@ -144,6 +144,40 @@ void initStripSegments() {
   const uint16_t ledsTF[] = {254,255};
   StripLEDConfig ledsTFCfg[] = {{1, ledsTF, sizeof(ledsTF) / sizeof(ledsTF[0])}};
   TFSegment = scene3.createSegment(ledsTFCfg, 1);
+}
+
+Segment *XOnSegment, *XOffSegment;
+
+void initXSegments() {
+  const uint16_t ledsXOn[] = {
+    65, 74, 81, 93,      // LA
+    132, 136, 143, 150, 157, 163,  // LB
+    108, 116, 121,           // SA
+    100, 107,        // SB
+    123,  // TE
+    124, 125,  // TD
+    126, 127,  // TC
+    128, 129,  // TB
+    130, 131,  // TA
+  };
+  StripLEDConfig ledsXOnCfg[] = {{1, ledsXOn, sizeof(ledsXOn) / sizeof(ledsXOn[0])}};
+  XOnSegment = scene5.createSegment(ledsXOnCfg, 1);
+
+  const uint16_t ledsXOff[] = {
+    // LA
+    58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
+    // LB
+    133, 134, 135, 137, 138, 139, 140, 141, 142, 144, 145, 146, 147, 148, 149, 151, 152, 153, 154, 155, 156, 158, 159, 160, 161, 162, 164, 165, 166, 167,
+    // SA
+    109, 110, 111, 112, 113, 114, 115, 117, 118, 119, 120,
+    // SB
+    94, 95, 96, 97, 98, 99, 101, 102, 103, 104, 105, 106,
+    // TE
+    122,
+    // (everything in TD, TC, TB, TA already covered by XOn)
+  };
+  StripLEDConfig ledsXOffCfg[] = {{1, ledsXOff, sizeof(ledsXOff) / sizeof(ledsXOff[0])}};
+  XOffSegment = scene5.createSegment(ledsXOffCfg, 1);
 }
 
 Segment *CenterVerticalRow1Segment, *CenterVerticalRow2Segment, *CenterVerticalRow3Segment, *CenterVerticalRow4Segment, *CenterVerticalRow5Segment, *CenterVerticalRow6Segment,
@@ -557,6 +591,14 @@ void initWeAreYourFriendsShow() {
   // 117
   // TODO: Occasionally flash a big pink X with black background
   Cue* chorus2Cue1 = new Cue(&scene2, 32.0, bpm/32.0*32.5);
+
+  auto xOnAnimation = new PatternBeatAnimation("| wSfSfwwFfFfS |", bpm, CRGB(200, 0, 100));
+  auto xOffAnimation = new PatternBeatAnimation("| wSfSfwwFfFfS |", bpm, CRGB::Black);
+  xOnAnimation->addSegment(XOnSegment, 100);
+  xOffAnimation->addSegment(XOffSegment, 100);
+  chorus2Cue1->addOverlay(xOnAnimation, BLEND_REPLACE);
+  chorus2Cue1->addOverlay(xOffAnimation, BLEND_REPLACE);
+
   chorus2Cue1->addAnimation(chorus1SynthLeftAnimation);
   chorus2Cue1->addAnimation(chorus1SynthRightAnimation);
   chorus2Cue1->addAnimation(chorus1Base12Animation);
@@ -960,6 +1002,7 @@ void setup() {
   initScene2Segments();
   initStripSegments();
   initRowSegments();
+  initXSegments();
   Serial.println("Init: Scene1Segments");
   initLoseYourselfShow();
   initTestShow();
