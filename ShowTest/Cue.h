@@ -5,6 +5,12 @@
 #include <Scene.h>
 
 #define MAX_ANIMATIONS_PER_SCENE 12
+#define MAX_OVERLAYS_PER_CUE 4
+
+struct OverlayAnimation {
+  Animation* animation;
+  BlendMode mode;
+};
 
 class Cue {
 public:
@@ -26,9 +32,23 @@ public:
     }
   }
 
+  OverlayAnimation overlays[MAX_OVERLAYS_PER_CUE];
+  uint8_t overlayCount = 0;
+
+  void addOverlay(Animation* anim, BlendMode mode) {
+    if (overlayCount < MAX_OVERLAYS_PER_CUE) {
+      overlays[overlayCount++] = {anim, mode};
+    }
+  }
+
   void update(unsigned long t) {
     for (uint8_t i = 0; i < animationCount; i++) {
       animations[i]->apply(t);
+    }
+
+    for (uint8_t i = 0; i < overlayCount; i++) {
+      OverlayAnimation& oa = overlays[i];
+      oa.animation->applyOverlay(t, oa.mode);
     }
   }
 };
