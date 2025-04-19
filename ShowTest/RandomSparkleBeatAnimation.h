@@ -19,7 +19,7 @@ public:
   uint16_t lastBeatIndex = 65535;
   unsigned long lastTimeInCycle = 0;
 
-  static const uint16_t MAX_LEDS = 256;
+  static const uint16_t MAX_LEDS = 64;
   bool sparkleMask[MAX_SEGMENTS_PER_ANIMATION][MAX_LEDS];
   CRGB sparkleColor[MAX_SEGMENTS_PER_ANIMATION][MAX_LEDS];
 
