@@ -589,9 +589,7 @@ void initWeAreYourFriendsShow() {
   weAreYourFriendsShow.addCue(instrumentalBaseCue);
 
   // 117
-  // TODO: Occasionally flash a big pink X with black background
   Cue* chorus2Cue1 = new Cue(&scene2, 32.0, bpm/32.0*32.5);
-
   auto xOnAnimation = new PatternBeatAnimation("| w | ffFtFte q h | h q fFftFte | w | h q efFftT | q fTtFtfTtFt h | w | h q Q |", bpm, CRGB(200, 0, 100));
   auto xOffAnimation = new PatternBeatAnimation("| w | ffFtFte q h | h q fFftFte | w | h q efFftT | q fTtFtfTtFt h | w | h q Q |", bpm, CRGB::Black);
   xOnAnimation->addSegment(XOnSegment, 100);
@@ -621,7 +619,6 @@ void initWeAreYourFriendsShow() {
   weAreYourFriendsShow.addCue(chorus3Cue1);
 
   // 150 Chorus 
-  // TODO: Alternate left and right every quarter note
   Cue* chorus4Cue1 = new Cue(&scene2, 32.0, bpm);
   auto chorus4SynthLeftAnimation = new TheatreChasePaletteBeatAnimation("| Ee q Ee q |", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
   auto chorus4SynthRightAnimation = new TheatreChasePaletteBeatAnimation("| q Ee q Ee | ", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
@@ -714,14 +711,32 @@ void initWeAreYourFriendsShow() {
   // * Green
   // * Purple 
   // * Blue
-  Cue* chorus7Cue1 = new Cue(&scene2, 32.0, bpm);
-  chorus7Cue1->addAnimation(chorus1SynthLeftAnimation);
-  chorus7Cue1->addAnimation(chorus1SynthRightAnimation);
-  chorus7Cue1->addAnimation(chorus1Base12Animation);
-  chorus7Cue1->addAnimation(chorus1Base3Animation);
-  chorus7Cue1->addAnimation(chorus1Base3AndAnimation);
-  chorus7Cue1->addAnimation(chorus1Base4Animation);
-  chorus7Cue1->addAnimation(chorus1Base4AndAnimation);
+
+  CRGBPalette16 chorusPalette = make3StopGradient(darkBlue, deepPurple, electricTeal);
+
+  Cue* chorus7Cue1 = new Cue(&scene5, 32.0, bpm);
+  auto chorus7CenterWallAnimation = new RandomSparkleBeatAnimation("| Q q q q |", bpm, chorusPalette, 10, 3, 100, 3, 10, true);
+  auto chorus7CeilingAnimation = new RandomSparkleBeatAnimation("| q Q q q |", bpm, chorusPalette, 10, 3, 100, 3, 10, true);
+  auto chorus7RightWallAnimation = new RandomSparkleBeatAnimation("| q q q Q |", bpm, chorusPalette, 10, 3, 100, 3, 10, true);
+  auto chorus7LeftWallAnimation = new RandomSparkleBeatAnimation("| q q Q q | ", bpm, chorusPalette, 10, 3, 100, 3, 3, true);
+
+  chorus7CenterWallAnimation->addSegment(CenterVerticalRow1Segment, 80);
+  chorus7CenterWallAnimation->addSegment(CenterVerticalRow2Segment, 80);
+  chorus7CenterWallAnimation->addSegment(CenterVerticalRow3Segment, 80);
+  chorus7CenterWallAnimation->addSegment(CenterVerticalRow4Segment, 80);
+  chorus7CenterWallAnimation->addSegment(CenterVerticalRow5Segment, 80);
+  chorus7CenterWallAnimation->addSegment(CenterVerticalRow6Segment, 80);
+  chorus7RightWallAnimation->addSegment(MCSegment, 20);
+  chorus7RightWallAnimation->addSegment(MDSegment, 20);
+  chorus7LeftWallAnimation->addSegment(MASegment, 50);
+  chorus7LeftWallAnimation->addSegment(SCSegment, 10);
+  chorus7CeilingAnimation->addSegment(MBSegment, 50);
+  chorus7CeilingAnimation->addSegment(SDSegment, 50);
+  chorus7CeilingAnimation->addSegment(TFSegment, 50);
+  chorus7Cue1->addAnimation(chorus7CenterWallAnimation);
+  chorus7Cue1->addAnimation(chorus7RightWallAnimation);
+  chorus7Cue1->addAnimation(chorus7LeftWallAnimation);
+  chorus7Cue1->addAnimation(chorus7CeilingAnimation);
   weAreYourFriendsShow.addCue(chorus7Cue1);
 
   // 205
