@@ -376,7 +376,8 @@ void initWeAreYourFriendsShow() {
 
   // 0:30
   Cue* loadingFastCue = new Cue(&scene4, 63.0, averageFastbpm);
-  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", averageFastbpm, WhitePalette(), 10, 3, 100, 3, 3, true);
+ 
+  auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", averageFastbpm, WhitePalette(), 10, 3, 100, true);
   auto loadingFastCueRow1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", averageFastbpm, CRGB::White);
   auto loadingFastCueRow2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", averageFastbpm, CRGB::White);
   auto loadingFastCueRow3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", averageFastbpm, CRGB::White);
@@ -404,13 +405,13 @@ void initWeAreYourFriendsShow() {
 
   // 0:44
   Cue* wholeStarsCue = new Cue(&scene2, 16.0, bpm);
-  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, 3, 3, true);
+  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, true);
   wholeStarsAnimation->addSegment(LASegment, 50);
   wholeStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(wholeStarsCue);
 
   Cue* halfStarsCue = new Cue(&scene2, 8.0, bpm);
-  auto halfStarsAnimation = new RandomSparkleBeatAnimation("| H H |", bpm, make2StopGradient(darkBlue, deepPurple), 30, 2, 100, 3, 3, true); // Dark Blue to Deep Purple
+  auto halfStarsAnimation = new RandomSparkleBeatAnimation("| H H |", bpm, make2StopGradient(darkBlue, deepPurple), 30, 2, 100, true); // Dark Blue to Deep Purple
   halfStarsAnimation->addSegment(LBSegment, 20);
   halfStarsCue->addAnimation(halfStarsAnimation);
   halfStarsCue->addAnimation(wholeStarsAnimation);
@@ -418,7 +419,7 @@ void initWeAreYourFriendsShow() {
 
   // 0:56
   Cue* quarterStarsCue = new Cue(&scene2, 16.0, bpm);
-  auto quarterStarsAnimation = new RandomSparkleBeatAnimation("| Q Q Q Q |", bpm, make2StopGradient(deepPurple, cosmicPink), 30, 3, 100, 3, 3, true); // Deep Purple to Cosmic Pink
+  auto quarterStarsAnimation = new RandomSparkleBeatAnimation("| Q Q Q Q |", bpm, make2StopGradient(deepPurple, cosmicPink), 30, 3, 100, true); // Deep Purple to Cosmic Pink
   quarterStarsAnimation->addSegment(SCSegment, 20);
   quarterStarsAnimation->addSegment(SDSegment, 20);
   quarterStarsAnimation->addSegment(MASegment, 20);
@@ -433,7 +434,7 @@ void initWeAreYourFriendsShow() {
 
   // 63s
   Cue* eighthStarsCue = new Cue(&scene2, 6.0, bpm);
-  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EE EE EE EE | EE EE |", bpm, make2StopGradient(cosmicPink, electricTeal), 35, 1, 100, 3, 3, true); // Cosmic Pink to Electric Teal
+  auto eighthStarsAnimation = new RandomSparkleBeatAnimation("| EE EE EE EE | EE EE |", bpm, make2StopGradient(cosmicPink, electricTeal), 35, 1, 100, true); // Cosmic Pink to Electric Teal
   eighthStarsAnimation->addSegment(SASegment, 20);
   eighthStarsAnimation->addSegment(SBSegment, 20);
   eighthStarsAnimation->addSegment(TASegment, 20);
@@ -451,7 +452,7 @@ void initWeAreYourFriendsShow() {
   Cue* chorus1Cue1 = new Cue(&scene2, 6.0, bpm);
   auto chorus1BecauseWeAnimation = new TheatreChasePaletteBeatAnimation("sS sS | q q h | q", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
   auto chorus1CymbalCrashAnimation = new TheatreChasePaletteBeatAnimation("h | Q q h | q", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
-  auto chorus1Quarters = new RandomSparkleBeatAnimation("| Q Q | Q Q Q Q | q", bpm, make2StopGradient(deepPurple, cosmicPink), 30, 3, 100, 3, 3, true);
+  auto chorus1Quarters = new RandomSparkleBeatAnimation("| Q Q | Q Q Q Q | q", bpm, make2StopGradient(deepPurple, cosmicPink), 30, 3, 100, true);
   chorus1Quarters->addSegment(SCSegment, 20);
   chorus1Quarters->addSegment(MASegment, 20);
   chorus1Quarters->addSegment(MCSegment, 20);
@@ -715,10 +716,10 @@ void initWeAreYourFriendsShow() {
   CRGBPalette16 chorusPalette = make3StopGradient(darkBlue, deepPurple, electricTeal);
 
   Cue* chorus7Cue1 = new Cue(&scene5, 32.0, bpm);
-  auto chorus7CenterWallAnimation = new RandomSparkleBeatAnimation("| Q q q q |", bpm, chorusPalette, 10, 3, 100, 3, 10, true);
-  auto chorus7CeilingAnimation = new RandomSparkleBeatAnimation("| q Q q q |", bpm, chorusPalette, 10, 3, 100, 3, 10, true);
-  auto chorus7RightWallAnimation = new RandomSparkleBeatAnimation("| q q q Q |", bpm, chorusPalette, 10, 3, 100, 3, 10, true);
-  auto chorus7LeftWallAnimation = new RandomSparkleBeatAnimation("| q q Q q | ", bpm, chorusPalette, 10, 3, 100, 3, 3, true);
+  auto chorus7CenterWallAnimation = new RandomSparkleBeatAnimation("| Q q q q |", bpm, chorusPalette, 10, 3, 100, true);
+  auto chorus7CeilingAnimation = new RandomSparkleBeatAnimation("| q Q q q |", bpm, chorusPalette, 10, 3, 100, true);
+  auto chorus7RightWallAnimation = new RandomSparkleBeatAnimation("| q q q Q |", bpm, chorusPalette, 10, 3, 100, true);
+  auto chorus7LeftWallAnimation = new RandomSparkleBeatAnimation("| q q Q q | ", bpm, chorusPalette, 10, 3, 100, true);
 
   chorus7CenterWallAnimation->addSegment(CenterVerticalRow1Segment, 80);
   chorus7CenterWallAnimation->addSegment(CenterVerticalRow2Segment, 80);
