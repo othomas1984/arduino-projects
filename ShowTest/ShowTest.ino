@@ -451,7 +451,7 @@ void initWeAreYourFriendsShow() {
   // 66s
   Cue* chorus1Cue1 = new Cue(&scene2, 6.0, bpm);
   auto chorus1BecauseWeAnimation = new TheatreChasePaletteBeatAnimation("sS sS | q q h | q", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
-  auto chorus1CymbalCrashAnimation = new TheatreChasePaletteBeatAnimation("h | Q q h | q", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
+  auto chorus1CymbalCrashAnimation = new TheatreChasePaletteBeatAnimation("q estQt q h | q", bpm, make4StopGradient(darkBlue, deepPurple, cosmicPink, electricTeal), true, 1);
   auto chorus1Quarters = new RandomSparkleBeatAnimation("| Q Q | Q Q Q Q | q", bpm, make2StopGradient(deepPurple, cosmicPink), 30, 3, 100, true);
   chorus1Quarters->addSegment(SCSegment, 20);
   chorus1Quarters->addSegment(MASegment, 20);
