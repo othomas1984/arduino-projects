@@ -1,4 +1,5 @@
 import serial
+import serial.tools.list_ports
 import time
 import subprocess
 from threading import Thread, Lock
@@ -8,10 +9,45 @@ import tty
 import select
 import pygame
 
-# === CONFIGURATION ===
-SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
+
 BAUD_RATE = 9600
-SONG_LENGTH_SECONDS = 200
+
+def test_port(device, baud=9600, timeout=2):
+    try:
+        with serial.Serial(device, baud, timeout=timeout) as ser:
+            time.sleep(2)  # Allow reset
+            ser.write(b'hello\n')
+            response = ser.readline().decode(errors="ignore").strip()
+            if "[Serial] Received: hello" in response:
+                print(f"✅ Confirmed Arduino on {device}")
+                return True
+            else:
+                print(f"⚠️ Unexpected response from {device}: {response}")
+    except Exception as e:
+        print(f"❌ Could not open {device}: {e}")
+    return False
+
+def find_serial_port():
+    preferred = "/dev/cu.usbserial-0001"
+    print(f"🔍 Trying preferred port: {preferred}")
+    if test_port(preferred, BAUD_RATE):
+        return preferred
+
+    print("🔍 Scanning all serial ports...")
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if port.device == preferred:
+            continue  # Already tried
+        if test_port(port.device, BAUD_RATE):
+            return port.device
+
+# === CONFIGURATION ===
+# SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
+SERIAL_PORT = find_serial_port()
+if not SERIAL_PORT:
+    print("❌ Unable to find any usable serial port.")
+    sys.exit(1)
+
 MAX_LOG_LINES = 25
 WE_ARE_AUDIO_FILE = "TheUAisYourFriend.mp3"
 LOSE_YOURSELF_AUDIO_FILE = "Eminem_Lose_Yourself.mp3"
