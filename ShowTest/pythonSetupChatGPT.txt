@@ -1,0 +1,420 @@
+Skip to content
+You said:
+I am on a brand new laptop without a full python setup. What do I need to run to get this script to work? import serial
+import time
+import subprocess
+from threading import Thread, Lock
+import sys
+import termios
+import tty
+import select
+import pygame
+
+# === CONFIGURATION ===
+SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
+BAUD_RATE = 9600
+SONG_LENGTH_SECONDS = 200
+MAX_LOG_LINES = 25
+WE_ARE_AUDIO_FILE = "TheUAisYourFriend.mp3"
+LOSE_YOURSELF_AUDIO_FILE = "Eminem_Lose_Yourself.mp3"
+
+log_lines = []
+LOG_LOCK = Lock()
+input_buffer = ""
+ser = None
+
+def log(message):
+    with LOG_LOCK:
+        log_lines.append(message)
+        if len(log_lines) > MAX_LOG_LINES:
+            log_lines.pop(0)
+        redraw_console()
+
+def redraw_console():
+    sys.stdout.write("\033[2J")  # Clear screen
+    sys.stdout.write("\033[H")   # Cursor to top-left
+    for line in log_lines:
+        print(line)
+    print("\n" + "-" * 40)
+    sys.stdout.write("> " + input_buffer)
+    sys.stdout.flush()
+
+# === FUNCTION: Read Serial Responses ===
+def read_serial(ser):
+    while True:
+        try:
+            line = ser.readline().decode(errors="ignore").strip()
+            if line:
+                log(f"[Arduino →] {line}")
+                if line == "BTN:0":
+                    stop_audio()
+                    ser.write(b'x\n')
+                if line == "BTN:1":
+                    play_show_4()
+                if line == "BTN:7":
+                    play_show_1()
+                if line == "BTN:2":
+                    seek(20000)
+                if line == "BTN:3":
+                    seek(-10000)
+                if line == "BTN:100":
+                    play_show_3()
+        except Exception as e:
+            log(f"[Serial Read Error] {e}")
+            break
+
+# === FUNCTION: Handle Input Character-by-Character ===
+def read_input_custom():
+    global input_buffer
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    tty.setcbreak(fd)
+    try:
+        while True:
+            if select.select([sys.stdin], [], [], 0.1)[0]:
+                c = sys.stdin.read(1)
+                if c == '\n':
+                    raw = input_buffer.strip()
+                    if raw:
+                        message = raw + "\n"
+                        ser.write(message.encode())
+                        log(f"[Host →] (manual) Sent: {raw}")
+                        if raw == "x":
+                            # subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+                            stop_audio()
+                        elif raw == "SHOW:1":
+                            play_show_1()
+                        elif raw == "SHOW:2":
+                            stop_audio()
+                            # subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+                        elif raw == "SHOW:3":
+                            stop_audio()
+                            # subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+                        elif raw == "SHOW:4":
+                            play_show_4()
+                        elif raw.startswith("SEEK:"):
+                            log(f"[HOST] {raw}")
+                            try:
+                                global last_seek_pos, needs_seek_update
+                                val = raw[5:].strip()
+                                current_pos = pygame.mixer.music.get_pos() + last_seek_pos
+                                if val.startswith("+"):
+                                    offset = int(val[1:])
+                                    if offset < 500:
+                                        offset = offset * 1000
+                                    seek(offset)
+                                elif val.startswith("-"):
+                                    offset = int(val[1:])
+                                    if offset < 500:
+                                        offset = offset * 1000
+                                    seek(offset)
+                                else:
+                                    offset = int(val)
+                                    if offset < 500:
+                                        offset = offset * 1000
+                                    seek_to(max(0, offset))
+                            except Exception as e:
+                                log(f"[Seek Error] {e}")
+                    input_buffer = ""
+                    redraw_console()
+                elif c == '\x7f':  # Backspace
+                    input_buffer = input_buffer[:-1]
+                    redraw_console()
+                elif c.isprintable():
+                    input_buffer += c
+                    redraw_console()
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+def seek(offset):
+    if(pygame.mixer.music.get_pos() < 0):
+        return
+    global last_seek_pos
+    current_pos = pygame.mixer.music.get_pos() + last_seek_pos
+    new_pos = max(0, current_pos + offset)
+    seek_to(new_pos)
+
+def seek_to(new_pos):
+    global last_seek_pos
+    pygame.mixer.music.stop()
+    pygame.mixer.music.play(start=new_pos / 1000.0)
+    set_last_seek_pos(new_pos)
+
+def play_show_1():
+    ser.write(b'SHOW:1\n')
+    stop_audio()
+    pygame.mixer.music.load(LOSE_YOURSELF_AUDIO_FILE)
+    pygame.mixer.music.play()
+    set_last_seek_pos(0)
+    log("[Audio] Playing Eminem_Lose_Yourself.mp3")
+
+def play_show_3():
+    ser.write(b'SHOW:3\n')
+    stop_audio()
+    set_last_seek_pos(0)
+    log("[Audio] No Audio: Ambiance show playing")
+
+def play_show_4():
+    ser.write(b'SHOW:4\n')
+    stop_audio()
+    pygame.mixer.music.load(WE_ARE_AUDIO_FILE)
+    pygame.mixer.music.play()
+    set_last_seek_pos(0)
+    log("[Audio] Playing TheUAisYourFriend.mp3")
+
+def stop_audio():
+    try:
+        pygame.mixer.music.stop()
+    except Exception as e:
+        log(f"[Audio Error] Failed to stop playback: {e}")
+
+def set_last_seek_pos(last_pos):
+    global last_seek_pos
+    last_seek_pos = last_pos
+    log(f"[Audio] Seeked to {last_pos} ms")
+    time.sleep(0.25)  # Let playback resume before next sync
+    needs_seek_update = True
+
+# === Start Spotify Prep ===
+# subprocess.run(["osascript", "-e", 'tell application "Spotify" to pause'])
+# subprocess.run(["osascript", "-e", 'tell application "Spotify" to previous track'])
+
+# === Open Serial First (Arduino resets) ===
+log("Connecting to Arduino...")
+ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
+time.sleep(2)
+
+# === Initialize pygame mixer ===
+pygame.mixer.init()
+# === Start Threads ===
+Thread(target=read_serial, args=(ser,), daemon=True).start()
+Thread(target=read_input_custom, daemon=True).start()
+time.sleep(1)
+
+# === Send 's' to Start the Show ===
+log("[Host →] Sending: s")
+play_show_3()
+
+# === Start Spotify AFTER Arduino is ready ===
+# log("Starting Spotify playback...")
+# track_uri = "spotify:track:5Z01UMMf7V1o0MzF86s6WJ"
+# subprocess.run(["osascript", "-e", f'tell application \"Spotify\" to play track \"{track_uri}\"'])
+
+# # === Main Loop: Send Time Syncs ===
+# subprocess.run(["osascript", "-e", 'tell application "System Events" to set frontmost of process "iTerm2" to true'])
+
+last_seek_pos = 0  # Track absolute position of playback
+play_start_time = time.time()
+needs_seek_update = False
+last_sync = 0
+try:
+    while True:
+        # get_pos returns time in milliseconds since playback started
+        if(pygame.mixer.music.get_pos() < 0): 
+            continue
+        pos_ms = last_seek_pos + pygame.mixer.music.get_pos()
+        if pos_ms >= 0:
+            if abs(pos_ms - last_sync) > 5000 or needs_seek_update:
+                needs_seek_update = False
+                message = f"T:{pos_ms}\n"
+                ser.write(message.encode())
+                log(f"[Host →] Sending: {message.strip()}")
+                last_sync = pos_ms
+        time.sleep(0.02)
+except KeyboardInterrupt:
+    log("Stopped by user.")
+finally:
+    ser.close()
+    pygame.mixer.quit()
+ChatGPT said:
+To run the script successfully on your new laptop, you'll need to set up a Python environment and install some libraries and dependencies. Here's what you'll need to do:
+
+1. Install Python (if not already installed)
+If you haven't already installed Python on your new laptop, you can download it from the official Python website.
+
+2. Install the Required Python Libraries
+Your script imports several libraries, so you'll need to install them using pip. Open a terminal (Command Prompt or PowerShell on Windows, Terminal on macOS/Linux) and run the following commands:
+
+pip install pyserial pygame
+pyserial: Handles serial communication between your laptop and the Arduino.
+pygame: Used for playing audio files.
+Note: The script is using pygame.mixer for audio playback, so make sure you install the correct version of pygame that supports your system (especially for macOS if you're on a Mac, as it can sometimes require specific handling for audio libraries).
+3. Install the Additional Dependencies (for specific functionality):
+termios, tty, and select: These are standard libraries in Python (for Unix-like systems, including macOS and Linux). However, if you're using Windows, these libraries won't work, as they're specific to Unix-like systems. For Windows, you may need a workaround to capture keyboard input in a non-blocking way, such as using the keyboard library or similar.
+To install the keyboard library (for Windows):
+
+pip install keyboard
+If you're on Windows, you might need to modify the read_input_custom() function to use the keyboard library to handle key presses instead of termios and tty.
+
+4. Setting up the Serial Port
+macOS: The script is currently set to use /dev/cu.usbserial-0001 as the serial port. You'll need to ensure that your Arduino is connected and that you have the correct serial port. You can list serial devices on macOS using:
+ls /dev/cu.*
+Windows: On Windows, the serial port will typically be something like COM3, COM4, etc. You'll need to find the correct port from the Device Manager (under "Ports (COM & LPT)"). Then update the SERIAL_PORT variable with something like COM3.
+5. Setting Up Audio Files
+The script references two audio files:
+
+TheUAisYourFriend.mp3
+Eminem_Lose_Yourself.mp3
+Make sure these files are available on your laptop and update the file paths in the script if they're in different locations. If you don't have the files, you'll need to download them or replace them with your own audio files.
+
+6. Handling Permissions (if needed)
+If you're on macOS or Linux, you may need to grant permission to access the serial port. You can check and modify the permissions by using:
+
+sudo chmod 666 /dev/cu.usbserial-0001
+Replace /dev/cu.usbserial-0001 with the actual serial port you're using.
+
+7. Run the Script
+Once everything is set up, you can run the script by navigating to the folder where the script is located and running:
+
+python your_script_name.py
+Potential Issues to Watch Out For:
+Audio Playback: Make sure that pygame.mixer.init() works properly on your system. If you have issues with audio, it might be related to missing or incompatible audio drivers.
+Serial Communication: If the Arduino isn’t responding as expected, check the serial port settings and ensure the Arduino is correctly connected and running the appropriate firmware.
+File Paths: If you’re on Windows, you might need to use backslashes for file paths (e.g., C:\\path\\to\\your\\file.mp3), or use raw strings (prefix paths with r).
+Let me know if you run into any specific issues while setting up, and I’ll help you troubleshoot!
+
+You said:
+I'm on a Mac and have python3 installed already. Is that an ok place to start
+ChatGPT said:
+Yes, starting with Python 3 on your Mac is absolutely fine! Python 3 is the recommended version to use, and macOS comes with Python 3 pre-installed. You’re good to go from there!
+
+Here’s a quick checklist for setting things up and running your script:
+
+1. Verify Python 3 Installation
+First, verify that Python 3 is installed and accessible. Open Terminal and type:
+
+python3 --version
+You should see an output like:
+
+Python 3.x.x
+This confirms that Python 3 is installed.
+
+2. Install Required Python Libraries
+You’ll need pyserial and pygame. You can install them via pip3. Run these commands in the Terminal:
+
+pip3 install pyserial pygame
+This will install both libraries:
+
+pyserial for serial communication (between your Mac and Arduino).
+pygame for audio playback.
+3. Install Additional Dependencies (for handling input)
+Since you're on macOS, you don’t need to worry about termios, tty, or select (they’re built into Python for Unix-like systems). But if you want to modify the script for a different method of reading input, you could explore libraries like keyboard, though that's usually more for Windows.
+
+4. Find the Correct Serial Port
+The script is set up for SERIAL_PORT = "/dev/cu.usbserial-0001". Make sure that’s the correct serial port for your Arduino. To check which serial ports are available, run this command:
+
+ls /dev/cu.*
+This will list the available serial devices. If you're using an Arduino, it should show up as something like /dev/cu.usbserial-xxxx. Update the SERIAL_PORT variable in your script to match the correct port.
+
+For example, if your Arduino is on /dev/cu.usbmodem1421, change:
+
+SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
+to:
+
+SERIAL_PORT = "/dev/cu.usbmodem1421"  # Replace with actual port
+5. Check Audio Files
+The script expects the following MP3 files:
+
+TheUAisYourFriend.mp3
+Eminem_Lose_Yourself.mp3
+Make sure these audio files are in the same directory as the script, or update the script with the correct file paths. You can place them in the same folder as the script, or give absolute paths like /Users/your_username/path/to/audio.mp3.
+
+6. Permissions for Serial Port (if needed)
+If you run into a permissions error when accessing the serial port, you might need to give your user account permission to access the device. You can change the permissions for the device with:
+
+sudo chmod 666 /dev/cu.usbserial-0001
+Replace /dev/cu.usbserial-0001 with the correct port from the ls /dev/cu.* output.
+
+7. Run the Script
+Once all dependencies are installed, and the configuration is correct, navigate to the folder where your script is saved using Terminal, then run it with:
+
+python3 your_script_name.py
+8. Troubleshooting
+Audio Not Playing: If you face issues with audio playback, try testing pygame.mixer separately by loading and playing an MP3 file in a separate, simpler script.
+Serial Communication: If the Arduino isn't responding, check your serial connection and make sure your Arduino is running the correct firmware (e.g., it should be sending expected messages like "BTN:0", "BTN:1", etc.).
+Let me know how it goes, or if you need help with any part of this process!
+
+You said:
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+
+    brew install pipx
+
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+
+[notice] A new release of pip is available: 24.0 -> 25.0.1
+[notice] To update, run: python3.12 -m pip install --upgrade pip
+ChatGPT said:
+It looks like you're encountering an issue because your Python environment is managed by Homebrew (which is typical on macOS). The message is advising you to use a virtual environment to install packages in a safe and isolated way without affecting your system’s Python setup.
+
+Here's how to fix this by creating a virtual environment and installing the necessary libraries there:
+
+Steps to Set Up a Virtual Environment:
+Create a Virtual Environment First, navigate to the directory where your script is located using the Terminal. Then create a virtual environment by running:
+python3 -m venv myenv
+This will create a folder called myenv in your current directory that will contain a fresh Python installation isolated from the system Python.
+Activate the Virtual Environment To activate the virtual environment, run:
+source myenv/bin/activate
+Once activated, your terminal prompt will change to show the name of the virtual environment (e.g., (myenv)), indicating that you're now working inside that environment.
+Install Required Libraries Now that your virtual environment is active, install the required libraries using pip:
+pip install pyserial pygame
+Run Your Script With the libraries installed, you can now run your script in this virtual environment:
+python3 your_script_name.py
+Deactivate the Virtual Environment When you're done, you can deactivate the virtual environment by running:
+deactivate
+This will return you to your system’s global Python environment.
+Why Use a Virtual Environment?
+Isolation: It keeps dependencies for different projects separate, so you don’t run into conflicts between package versions.
+System Integrity: It prevents any changes to your system Python, which could potentially break other software managed by Homebrew.
+Optional: Use pipx for Managing Python Applications
+If you prefer, you can use pipx to install and manage Python applications in isolated environments. To install pipx via Homebrew:
+
+brew install pipx
+Then, you can install your script or any other Python app with pipx like so:
+
+pipx install <package_name>
+This is a bit more advanced and typically used for Python tools you want to run as standalone applications.
+
+Let me know if you run into any issues with these steps, and I can guide you further!
+
+
+Get smarter responses, upload files and images, and more.
+
+Log in
+
+Sign up for free
+
+Attach
+
+Search
+
+Reason
+
+Voice
+ChatGPT can make mistakes. Check important info.
+?
