@@ -18,7 +18,7 @@ def test_port(device, baud=9600, timeout=2):
             time.sleep(2)  # Allow reset
             ser.write(b'hello\n')
             response = ser.readline().decode(errors="ignore").strip()
-            if "[Serial] Received: hello" in response:
+            if "[Serial] Received: hello" in response or "Show Time" in response:
                 print(f"✅ Confirmed Arduino on {device}")
                 return True
             else:
@@ -42,8 +42,8 @@ def find_serial_port():
             return port.device
 
 # === CONFIGURATION ===
-# SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
-SERIAL_PORT = find_serial_port()
+SERIAL_PORT = "/dev/cu.usbserial-0001"  # Update as needed
+# SERIAL_PORT = find_serial_port()
 if not SERIAL_PORT:
     print("❌ Unable to find any usable serial port.")
     sys.exit(1)
