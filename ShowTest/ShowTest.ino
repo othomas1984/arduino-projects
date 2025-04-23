@@ -363,11 +363,21 @@ void initWeAreYourFriendsShow() {
   dingCue->addAnimation(cueDing1Animation);
   weAreYourFriendsShow.addCue(dingCue);
 
+  CRGB darkBlue(0, 0, 60);
+  CRGB deepPurple(48, 0, 72);
+  CRGB cosmicPink(200, 0, 100);
+  CRGB electricTeal(0, 75, 125);
+
+  // CRGB darkBlue(0, 0, 68);
+  // CRGB deepPurple(48, 0, 72);
+  // CRGB cosmicPink(200, 0, 100);
+  // CRGB electricTeal(0, 200, 150);
+
   Cue* loadingSlowCue = new Cue(&scene4, 24.0, bpmIntro1);
-  auto cueloadingSlowRow1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", bpmIntro1, CRGB::White);
-  auto cueloadingSlowRow2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", bpmIntro1, CRGB::White);
-  auto cueloadingSlowRow3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", bpmIntro1, CRGB::White);
-  auto cueloadingSlowRow4Animation = new PatternBeatAnimation("| w | w | w | EeEeEeEe | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlowRow1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", bpmIntro1, darkBlue);
+  auto cueloadingSlowRow2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", bpmIntro1, deepPurple);
+  auto cueloadingSlowRow3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", bpmIntro1, electricTeal);
+  auto cueloadingSlowRow4Animation = new PatternBeatAnimation("| w | w | w | EeEeEeEe | W | W |", bpmIntro1, cosmicPink);
   auto cueloadingSlowRow5Animation = new PatternBeatAnimation("| w | w | w | w | EeEeEeEe | W |", bpmIntro1, CRGB::White);
   auto cueloadingSlowRow6Animation = new PatternBeatAnimation("| w | w | w | w | w | EeEeEeEe |", bpmIntro1, CRGB::White);
   cueloadingSlowRow1Animation->addSegment(CenterVerticalRow1Segment, 50);
@@ -385,9 +395,9 @@ void initWeAreYourFriendsShow() {
   weAreYourFriendsShow.addCue(loadingSlowCue);
 
   Cue* loadingSlow2Cue = new Cue(&scene4, 9.0, bpmIntro1);
-  auto cueloadingSlow2Row1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", bpmIntro1, CRGB::White);
-  auto cueloadingSlow2Row2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", bpmIntro1, CRGB::White);
-  auto cueloadingSlow2Row3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", bpmIntro1, CRGB::White);
+  auto cueloadingSlow2Row1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", bpmIntro1, darkBlue);
+  auto cueloadingSlow2Row2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", bpmIntro1, deepPurple);
+  auto cueloadingSlow2Row3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", bpmIntro1, electricTeal);
   cueloadingSlow2Row1Animation->addSegment(CenterVerticalRow1Segment, 50);
   cueloadingSlow2Row2Animation->addSegment(CenterVerticalRow2Segment, 50);
   cueloadingSlow2Row3Animation->addSegment(CenterVerticalRow3Segment, 50);
@@ -400,12 +410,12 @@ void initWeAreYourFriendsShow() {
   Cue* loadingFastCue = new Cue(&scene4, 63.0, averageFastbpm);
  
   auto introAnimation = new RandomSparkleBeatAnimation("| QQQQ |", averageFastbpm, WhitePalette(), 10, 3, 100, true);
-  auto loadingFastCueRow1Animation = new PatternBeatAnimation("| EeEeEeEe| W | W | W | W | W |", averageFastbpm, CRGB::White);
-  auto loadingFastCueRow2Animation = new PatternBeatAnimation("| w | EeEeEeEe | W | W | W | W |", averageFastbpm, CRGB::White);
-  auto loadingFastCueRow3Animation = new PatternBeatAnimation("| w | w | EeEeEeEe | W | W | W |", averageFastbpm, CRGB::White);
-  auto loadingFastCueRow4Animation = new PatternBeatAnimation("| w | w | w | EeEeEeEe | W | W |", averageFastbpm, CRGB::White);
-  auto loadingFastCueRow5Animation = new PatternBeatAnimation("| w | w | w | w | EeEeEeEe | W |", averageFastbpm, CRGB::White);
-  auto loadingFastCueRow6Animation = new PatternBeatAnimation("| w | w | w | w | w | EeEeEeEe |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow1Animation = new PatternBeatAnimation("| W        | W        | W        | W        | W        | W        | W        | EeEeEeEe | W        | W        |", averageFastbpm, darkBlue);
+  auto loadingFastCueRow2Animation = new PatternBeatAnimation("| W        | W        | W        | W        | W        | W        | eEeEeEee | w        | EeEeEeEe | W        |", averageFastbpm, deepPurple);
+  auto loadingFastCueRow3Animation = new PatternBeatAnimation("| W        | W        | W        | W        | W        | eEeEeEeE | w        | w        | w        | EeEeEeEe |", averageFastbpm, electricTeal);
+  auto loadingFastCueRow4Animation = new PatternBeatAnimation("| EeEeEeEe | W        | W        | W        | eEeEeEeE | w        | w        | w        | w        | w        |", averageFastbpm, cosmicPink);
+  auto loadingFastCueRow5Animation = new PatternBeatAnimation("| w        | EeEeEeEe | W        | eEeEeEeE | w        | w        | w        | w        | w        | w        |", averageFastbpm, CRGB::White);
+  auto loadingFastCueRow6Animation = new PatternBeatAnimation("| w        | w        | EeEeEeEe | w        | w        | w        | w        | w        | w        | w        |", averageFastbpm, CRGB::White);
   loadingFastCueRow1Animation->addSegment(CenterVerticalRow1Segment, 50);
   loadingFastCueRow2Animation->addSegment(CenterVerticalRow2Segment, 50);
   loadingFastCueRow3Animation->addSegment(CenterVerticalRow3Segment, 50);
@@ -420,14 +430,9 @@ void initWeAreYourFriendsShow() {
   loadingFastCue->addAnimation(loadingFastCueRow6Animation);
   weAreYourFriendsShow.addCue(loadingFastCue);
 
-  CRGB darkBlue(0, 0, 68);
-  CRGB deepPurple(48, 0, 72);
-  CRGB cosmicPink(200, 0, 100);
-  CRGB electricTeal(0, 200, 150);
-
   // 0:44
   Cue* wholeStarsCue = new Cue(&scene2, 16.0, bpm);
-  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, WhitePalette(), 30, 2, 100, true);
+  auto wholeStarsAnimation = new RandomSparkleBeatAnimation("| W | W |", bpm, darkBlue, 30, 2, 100, true);
   wholeStarsAnimation->addSegment(LASegment, 50);
   wholeStarsCue->addAnimation(wholeStarsAnimation);
   weAreYourFriendsShow.addCue(wholeStarsCue);
