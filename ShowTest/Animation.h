@@ -18,7 +18,7 @@ enum BlendMode {
   BLEND_SCREEN
 };
 
-#define MAX_SEGMENTS_PER_ANIMATION 8
+#define MAX_SEGMENTS_PER_ANIMATION 10
 
 class Animation {
 protected:
