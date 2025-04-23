@@ -93,7 +93,7 @@ Segment *piano1Segment, *piano2Segment, *drumSegment, *baseSegment, *stringSegme
 Segment *scene1Segment1, *scene1Segment2, *scene1Segment3, *scene1Segment4, *scene1Segment5, *scene1Segment6, *scene1Segment7;
 Segment *scene2Segment1;
 Segment *MDSegment, *MCSegment, *LASegment, *SBSegment, *SASegment, *TESegment, *TDSegment, *TCSegment, *TBSegment, *TASegment, *LBSegment, *MASegment, *SCSegment, *SDSegment, *MBSegment, *TFSegment;
-Show loseYourselfShow, testShow, ambianceShow, weAreYourFriendsShow;
+Show loseYourselfShow, testShow, ambianceShow, weAreYourFriendsShow, solidColorShow;
 
 void initStripSegments() {
   const uint16_t ledsMD[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28};
@@ -326,6 +326,28 @@ void initAmbianceShow() {
   intro->addSegment(scene2Segment1, 100);
   introCue->addAnimation(intro);
   ambianceShow.addCue(introCue);
+  Serial.println("Init: Cue1");
+
+}
+
+uint8_t red = 0;
+uint8_t green = 0;
+uint8_t blue = 0;
+
+void initSolidColorShow() {
+  uint16_t bpm = 6000;
+
+  Cue* introCue = new Cue(&scene2, 86400.0, bpm);
+  // auto intro = new PatternBeatAnimation("| W W |", bpm, CRGB(0, 0, 255)); // Pure Blue
+  // auto intro = new PatternBeatAnimation("| W W |", bpm, CRGB(0, 148, 255)); // Teal Blue
+  Serial.println(red);
+  Serial.println(green);
+  Serial.println(blue);
+  auto intro = new PatternBeatAnimation("| W W |", bpm,  CRGB(red, green, blue)); // Pink
+  // auto intro = new TheatreChasePaletteBeatAnimation("| SSS |", bpm, RainbowColors_p, false);
+  intro->addSegment(scene2Segment1, 100);
+  introCue->addAnimation(intro);
+  solidColorShow.addCue(introCue);
   Serial.println("Init: Cue1");
 
 }
@@ -1026,6 +1048,7 @@ void setup() {
   initLoseYourselfShow();
   initTestShow();
   initAmbianceShow();
+  initSolidColorShow();
 
 
   initWeAreYourFriendsShow();
@@ -1059,6 +1082,17 @@ bool parsePrefixedInt(const char* input, const char* prefix, uint32_t& outValue)
 int button_presses = 0;
 uint32_t button_debounce_last_pressed_millis = 0;
 uint32_t long_press_start_millis = 0;
+
+void startShow(Show newShow) {
+  activeShow = newShow;
+  showStartMillis = millis();
+  lastLogMillis = millis();
+  showStarted = true;
+  for (uint16_t i = 0; i < STRIP1_LEDS; i++) {
+    strip1[i] = CRGB::Black;
+  }
+  Serial.println("Show started!");
+}
 
 void loop() {
 
@@ -1114,6 +1148,57 @@ void loop() {
       } else {
         Serial.println("[Serial] Ignored: Invalid D:[0-255] format");
       }
+    } else if (len > 2 && strncmp(serialBuffer, "R:", 2) == 0) {
+      uint32_t redSetting;
+      if (parsePrefixedInt(serialBuffer, "R:", redSetting) && redSetting >= 0 && redSetting <256 ) {
+        Serial.print("Parsed R:");
+        Serial.println(redSetting);
+        red = redSetting;
+        solidColorShow.clearCues();
+        uint16_t bpm = 6000;
+        Cue* introCue = new Cue(&scene2, 86400.0, bpm);
+        auto intro = new PatternBeatAnimation("| W W |", bpm,  CRGB(red, green, blue)); // Pink
+        intro->addSegment(scene2Segment1, 100);
+        introCue->addAnimation(intro);
+        solidColorShow.addCue(introCue);
+        startShow(solidColorShow);
+      } else {
+        Serial.println("[Serial] Ignored: Invalid R:[0-255] format");
+      }
+    } else if (len > 2 && strncmp(serialBuffer, "G:", 2) == 0) {
+      uint32_t greenSetting;
+      if (parsePrefixedInt(serialBuffer, "G:", greenSetting) && greenSetting >= 0 && greenSetting <256 ) {
+        Serial.print("Parsed G:");
+        Serial.println(greenSetting);
+        green = greenSetting;
+        solidColorShow.clearCues();
+        uint16_t bpm = 6000;
+        Cue* introCue = new Cue(&scene2, 86400.0, bpm);
+        auto intro = new PatternBeatAnimation("| W W |", bpm,  CRGB(red, green, blue)); // Pink
+        intro->addSegment(scene2Segment1, 100);
+        introCue->addAnimation(intro);
+        solidColorShow.addCue(introCue);
+        startShow(solidColorShow);
+      } else {
+        Serial.println("[Serial] Ignored: Invalid G:[0-255] format");
+      }
+    } else if (len > 2 && strncmp(serialBuffer, "B:", 2) == 0) {
+      uint32_t blueSetting;
+      if (parsePrefixedInt(serialBuffer, "B:", blueSetting) && blueSetting >= 0 && blueSetting <256 ) {
+        Serial.print("Parsed B:");
+        Serial.println(blueSetting);
+        blue = blueSetting;
+        solidColorShow.clearCues();
+        uint16_t bpm = 6000;
+        Cue* introCue = new Cue(&scene2, 86400.0, bpm);
+        auto intro = new PatternBeatAnimation("| W W |", bpm,  CRGB(red, green, blue)); // Pink
+        intro->addSegment(scene2Segment1, 100);
+        introCue->addAnimation(intro);
+        solidColorShow.addCue(introCue);
+        startShow(solidColorShow);
+      } else {
+        Serial.println("[Serial] Ignored: Invalid B:[0-255] format");
+      }
     } else if (len == 1 && (serialBuffer[0] == 's' || serialBuffer[0] == 'S')) {
       showStartMillis = millis();
       lastLogMillis = millis();
@@ -1137,28 +1222,21 @@ void loop() {
       Serial.println(showIndex);
       switch (showIndex) {
         case 1:
-          activeShow = loseYourselfShow;
+          startShow(loseYourselfShow);
           break;
         case 2:
-          activeShow = testShow;
+          startShow(testShow);
           break;
         case 3:
-          activeShow = ambianceShow;
+          startShow(ambianceShow);
           break;
         case 4:
-          activeShow = weAreYourFriendsShow;
+          startShow(weAreYourFriendsShow);
           break;
         default:
           Serial.println("[Serial] Ignored: Invalid SHOW:[1-3] format");
           break;
       }
-      showStartMillis = millis();
-      lastLogMillis = millis();
-      showStarted = true;
-      for (uint16_t i = 0; i < STRIP1_LEDS; i++) {
-        strip1[i] = CRGB::Black;
-      }
-      Serial.println("Show started!");
     }
   }
 

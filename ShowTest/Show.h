@@ -21,6 +21,10 @@ public:
     }
   }
 
+  void clearCues() {
+    cueCount = 0;
+  }
+
   void update(unsigned long time) {
     unsigned long offset = 0;
 
